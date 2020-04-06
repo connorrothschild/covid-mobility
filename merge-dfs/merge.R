@@ -29,5 +29,33 @@ all <- lapply(filenames, function(i){
 ## rbind together
 merged <- do.call(rbind.data.frame, all)
 
+
+## bring in FIPS
+fips_codes <- maps::county.fips
+
+fips_codes <- fips_codes %>% 
+  mutate(state = sapply(strsplit(polyname, ",", fixed = TRUE), `[`, 1),
+         county = sapply(strsplit(polyname, ",", fixed = TRUE), `[`, 2),
+         combined_for_fips = paste(county, state))
+
+merged_for_fips <- merged %>% 
+  mutate(state_for_fips = str_to_lower(State),
+         county_for_fips = str_to_lower(Region),
+         county_for_fips = str_replace_all(county_for_fips, " county", ""),
+         combined_for_fips = paste(county_for_fips, state_for_fips))
+
+final_merged <- left_join(merged_for_fips, fips_codes, by = "combined_for_fips")
+
+## convert FIPS codes into characters, add trailing zero
+final_merged <- final_merged %>% 
+  mutate(fips = as.character(fips),
+         fips = stringr::str_pad(fips, 5, pad = "0", side = "left")) %>%
+  select(Region, State, fips, Category, everything())
+
+  # filter out the state level 
+final_merged <- final_merged %>% 
+  filter(Region != State) %>% 
+  select(-c(state_for_fips:county))
+
 ## write
-write.csv(merged, "../final.csv")
+write.csv(final_merged, "../final.csv")
