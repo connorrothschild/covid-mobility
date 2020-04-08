@@ -1,7 +1,7 @@
 library(tidyverse)
 
 ## list filepaths
-filenames = list.files(path="../data/", full.names=TRUE)
+filenames = list.files(path="./data-for-merge/", full.names=TRUE)
 
 ## lapply https://towardsdatascience.com/using-r-to-merge-the-csv-files-in-code-point-open-into-one-massive-file-933b1808106
 all <- lapply(filenames, function(i){
@@ -57,5 +57,14 @@ final_merged <- final_merged %>%
   filter(Region != State) %>% 
   select(-c(state_for_fips:county))
 
+county_data_wide <- final_merged
+
+county_data_long <- final_merged %>% 
+  pivot_longer(c("X2020.02.16":"X2020.03.29"), names_to = "date") %>% 
+  mutate(date = gsub("X","", date, fixed = TRUE),
+         date = gsub(".", "-", date, fixed = TRUE),
+         date = lubridate::ymd(date))
+
 ## write
-write.csv(final_merged, "../final.csv")
+write.csv(county_data_wide, "../data/county-data-wide.csv")
+write.csv(county_data_long, "../data/county-data-long.csv")
