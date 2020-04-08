@@ -29,7 +29,6 @@ all <- lapply(filenames, function(i){
 ## rbind together
 merged <- do.call(rbind.data.frame, all)
 
-
 ## bring in FIPS
 fips_codes <- maps::county.fips
 
@@ -39,6 +38,13 @@ fips_codes <- fips_codes %>%
          combined_for_fips = paste(county, state))
 
 merged_for_fips <- merged %>% 
+  mutate(State = stringr::str_replace(State, "Haweill", "Hawaii"),
+         State = stringr::str_replace(State, "Inots", "Illinois"),
+         State = stringr::str_replace(State, "Lowa", "Iowa"),
+         State = gsub("Rhode |sland", "Rhode Island", State, fixed = TRUE),
+         ## louisiana has parishes not counties
+         Region = stringr::str_replace(Region, "Parish", "County")
+  ) %>% 
   mutate(state_for_fips = str_to_lower(State),
          county_for_fips = str_to_lower(Region),
          county_for_fips = str_replace_all(county_for_fips, " county", ""),
