@@ -38,17 +38,20 @@ fips_codes <- fips_codes %>%
          combined_for_fips = paste(county, state))
 
 merged_for_fips <- merged %>% 
-  mutate(State = stringr::str_replace(State, "Haweill", "Hawaii"),
-         State = stringr::str_replace(State, "Inots", "Illinois"),
-         State = stringr::str_replace(State, "Lowa", "Iowa"),
+  mutate(State = stringr::str_replace_all(State, "Haweill", "Hawaii"),
+         State = stringr::str_replace_all(State, "inots", "Illinois"),
+         State = stringr::str_replace_all(State, "lowa", "Iowa"),
          State = gsub("Rhode |sland", "Rhode Island", State, fixed = TRUE),
          ## louisiana has parishes not counties
-         Region = stringr::str_replace(Region, "Parish", "County")
+         Region = stringr::str_replace_all(Region, "Parish", "County")
   ) %>% 
   mutate(state_for_fips = str_to_lower(State),
          county_for_fips = str_to_lower(Region),
          county_for_fips = str_replace_all(county_for_fips, " county", ""),
          combined_for_fips = paste(county_for_fips, state_for_fips))
+
+# see which counties we missed
+# setdiff(merged_for_fips$combined_for_fips, fips_codes$combined_for_fips)
 
 final_merged <- left_join(merged_for_fips, fips_codes, by = "combined_for_fips")
 
@@ -74,3 +77,10 @@ county_data_long <- final_merged %>%
 ## write
 write.csv(county_data_wide, "../data/county-data-wide.csv")
 write.csv(county_data_long, "../data/county-data-long.csv")
+
+## average of all six categories 
+county_data_long_grouped <- county_data_long %>% 
+  group_by(Region, fips, date) %>% 
+  summarise(value = mean(value, na.rm = TRUE))
+
+write.csv(county_data_long_grouped, "../data/county-data-long-averages.csv")
