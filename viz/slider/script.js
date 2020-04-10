@@ -87,27 +87,21 @@ function ready(error, data, us) {
 
 	countyShapes
 		.on('mouseover', function(d) {
-			tooltip.transition().duration(250).style('opacity', 1);
-			tooltip
-				.html(
-					'<p><strong>' +
-						d.properties.seconds[min][0].county +
-						// ', ' +
-						// d.properties.seconds[min][0].State +
-						'</strong></p>' +
-						// "<table><tbody><tr><td class='wide'>February 16:</td><td>" +
-						// formatPercent(d.properties.seconds[min][0].value / 100) +
-						// '</td></tr>' +
-						'<tr><td>Change in mobility on March 29: </td><td>' +
-						formatPercent(d.properties.seconds[max][0].value / 100) +
-						'</td></tr>'
-					// +
-					// '<tr><td>Change:</td><td>' +
-					// formatPercent((d.properties.seconds[max][0].value - d.properties.seconds[min][0].value) / 100) +
-					// '</td></tr></tbody></table>'
-				)
-				.style('left', d3.event.pageX + 15 + 'px')
-				.style('top', d3.event.pageY - 28 + 'px');
+			if (d.properties.seconds !== undefined && !isNaN(d.properties.seconds[max][0].value)) {
+				// console.log(d.properties.seconds[max][0].value);
+				tooltip.transition().duration(250).style('opacity', 1);
+				tooltip
+					.html(
+						'<p><strong>' +
+							d.properties.seconds[min][0].county +
+							'</strong></p>' +
+							'<tr><td>Change in mobility on March 29: </td><td>' +
+							formatPercent(d.properties.seconds[max][0].value / 100) +
+							'</td></tr>'
+					)
+					.style('left', d3.event.pageX + 15 + 'px')
+					.style('top', d3.event.pageY - 28 + 'px');
+			}
 		})
 		.on('mouseout', function(d) {
 			tooltip.transition().duration(250).style('opacity', 0);
@@ -159,12 +153,14 @@ function ready(error, data, us) {
 			'fill',
 			// 'black'
 			function(d) {
-				if (!isNaN(d.properties.seconds[second][0].value)) {
-					console.log('valid');
-					return color(d.properties.seconds[max][0].value);
-				} else {
-					console.log('invalid');
-					return 'white';
+				if (d.properties.seconds !== undefined && !isNaN(d.properties.seconds[second][0].value)) {
+					// if (!isNaN(d.properties.seconds[second][0].value)) {
+					// console.log(d.properties.seconds[second][0].value);
+					return color(d.properties.seconds[second][0].value);
+					// } else {
+					// 	console.log('invalid');
+					// 	return 'white';
+					// }
 				}
 			}
 		);
