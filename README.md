@@ -26,7 +26,7 @@ We also created visualizations to explore the distribution of mobility throughou
 
 We’ve also created an [interactive version](https://connorrothschild.github.io/covid-mobility/viz/) of this map, which allows us to explore these trends temporally. The visualization allows the user to select a given date to explore mobility at a given time, and the tooltip that appears on hover allows users to explore mobility for a given county:
 
-![map-slider](/Users/connorrothschild/Desktop/Projects/Other/covid-mobility/README-files/map-slider.gif)
+![map-slider](./README-files/map-slider.gif)
 
 
 
