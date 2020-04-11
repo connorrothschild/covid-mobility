@@ -36,8 +36,8 @@ Column {data-width=500}
 ```{r}
 
 # load ACS data
-ACS_econ <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/ACS_DATA/ACS_ECONOMIC_2018.csv",stringsAsFactors=FALSE)
-ACS_social <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/ACS_DATA/ACS_SOCIAL_2018.csv",stringsAsFactors=FALSE)
+ACS_econ <- read.csv("../data/ACS_ECONOMIC_2018.csv",stringsAsFactors=FALSE)
+ACS_social <- read.csv("../data/ACS_SOCIAL_2018.csv",stringsAsFactors=FALSE)
 
 # rename GEO_ID to FIPS
 names(ACS_econ)[1] <- "FIPS1"
@@ -52,10 +52,10 @@ ACS_social <- ACS_social[-1,]
 
 
 # laod SVI CDC data
-SVI_dat <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/SVI2018_US_COUNTY.csv")
+SVI_dat <- read.csv("../data/SVI2018_US_COUNTY.csv")
 
 # load mobility data
-mobility <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/covid-mobility/data/county-data-wide.csv")
+mobility <- read.csv("../data/county-data-wide.csv")
 mobility <- na.omit(mobility)
 
 mobility$net_mob <- (mobility$X2020.03.22 + mobility$X2020.03.23 + mobility$X2020.03.24 + mobility$X2020.03.25 + mobility$X2020.03.26 + mobility$X2020.03.27 + mobility$X2020.03.28 + mobility$X2020.03.29)/8
