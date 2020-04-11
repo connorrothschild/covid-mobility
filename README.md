@@ -60,7 +60,7 @@ We also explored the effect of stay-at-home orders. To do this, we created a sta
 
 ## Impact
 
-Our research will help us understand the effectiveness of stay-at-home orders at reducing travel, the effectiveness of social distancing on reducing transmission, and the various factors that may influence one’s ability to ‘distance.’ If we have a better understanding of when and why people socially distance, that lawmakers can address and account for these issues when creating policies. For example, if we know that communities without access to grocery stores are much less likely to socially distance, then laws might want to address this rather than ignore it.
+Our research will help us understand the effectiveness of stay-at-home orders at reducing travel, the effectiveness of social distancing on reducing transmission, and the various factors that may influence one’s ability to ‘distance.’ If we have a better understanding of when and why people socially distance, lawmakers can address and account for these issues when creating policies. For example, if we know that communities without access to grocery stores are much less likely to socially distance, then laws might want to address this rather than ignore it.
 
 Understanding communities’ disparate ability to socially distance is crucial to understand which communities are most vulnerable to the virus. Such insights may be able to inform a policy response, so that more resources can be allocated to protecting these communities. The insights we gather from this analysis could inform broader discussions of equity, the unequal impact of seemingly indiscriminate viruses, and socioeconomic inequality more broadly. 
 
