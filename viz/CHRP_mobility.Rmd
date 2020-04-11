@@ -84,7 +84,7 @@ names(mobility_agg)[1] <- "County_FIPS"
 mobility_work <- cbind("FIPS3"=mobility$fips[mobility$Category=="Workplace"],"net_work_mob"=mobility$net_mob[mobility$Category=="Workplace"])
 
 # select relevant columns from SVI data
-SVI_sub <- SVI_dat[,c("FIPS","ST_ABBR","EP_POV","EP_UNEMP","EP_PCI","EP_AGE65","EP_MINRTY","EP_MUNIT")]
+SVI_sub <- SVI_dat[,c("FIPS", "STATE", "ST_ABBR","E_TOTPOP","EP_POV","EP_UNEMP","EP_PCI","EP_AGE65","EP_MINRTY","EP_MUNIT")]
 ACS_social_sub <- ACS_social[,c("FIPS2","DP05_0037PE","DP05_0038PE","DP05_0039PE","DP05_0044PE","DP05_0052PE","DP05_0057PE","DP05_0071PE","DP05_0002PE","DP05_0003PE")]
 ACS_econ_sub <- ACS_econ[,c("FIPS1","DP03_0002PE","DP03_0009PE","DP03_0025E","DP03_0027PE","DP03_0028PE","DP03_0029PE","DP03_0030E","DP03_0031PE","DP03_0062E","DP03_0063E")]
 
@@ -195,4 +195,65 @@ ggplot(full_dat, aes(x=as.numeric(DP05_0038PE),y=net_mob)) + geom_point(color="l
 
 ```{r}
 ggplot(full_dat, aes(x=as.numeric(DP05_0071PE),y=net_mob)) + geom_point(color="indianred2") + geom_smooth(method='lm',color="indianred4") + ggtitle("Hispanic/Latino Mobility") + xlab("Percent Hispanic/Latino") + ylab("Average Change in Mobility 3/22-3/29")
+```
+
+Mobility Trends by State
+===================================== 
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Workplace Mobility vs. Time
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(data.table)
+library(plotly)
+library(crosstalk)
+
+# Aggregate all columns in c by weighted average, using E_TOTPOP as the weights
+c <- colnames(full_dat)[!colnames(full_dat) %in% c("STATE", "E_TOTPOP", "County_FIPS")]
+state_mobility <- data.table(full_dat, key = "STATE")
+for(n in c){
+ state_mobility[,
+     (n) := weighted.mean(get(n), E_TOTPOP),
+     #with = FALSE,
+     by = STATE]
+}
+# Remove duplicate rows
+state_mobility <- as.data.frame(state_mobility) %>% distinct()
+# Remove uninteresting columns
+state_mobility <- state_mobility %>% select(-contains("DP")) %>% select(-contains("EP"))
+state_mobility <- subset(state_mobility, select = -c(County_FIPS, E_TOTPOP, net_mob, net_work_mob, ST_ABBR ))
+
+state_policies <- read.csv("../data/covid_us_state_policies.csv")
+colnames(state_policies) <- toupper(colnames(state_policies))
+state_policies$STATE <- toupper(state_policies$STATE)
+state_policies <- subset(state_policies, select = c(STATE, STATE.OF.EMERGENCY,  STAY.AT.HOME..SHELTER.IN.PLACE))
+state_policies$STATE.OF.EMERGENCY <- as.Date(state_policies$STATE.OF.EMERGENCY, format='%m/%d/%Y')
+state_policies$STAY.AT.HOME..SHELTER.IN.PLACE <- as.Date(state_policies$STAY.AT.HOME..SHELTER.IN.PLACE, format='%m/%d/%Y')
+state_policies[state_policies == 0] <- NA
+
+# join the tables
+state_mobility <- merge(x=state_mobility, y=state_policies, by="STATE", all.x=TRUE)
+
+# Wide form to long form
+state_mobility <- gather(state_mobility, date, mobility, X2020.02.16:X2020.03.29, factor_key=FALSE)
+state_mobility$date <- as.Date(state_mobility$date, format='X%Y.%m.%d')
+
+df.state<-group_by(state_mobility, STATE)
+sd.state <- SharedData$new(df.state, ~STATE)
+p0<-
+   plot_ly(data=sd.state,x = ~date, y = ~mobility, height=750) %>% 
+    add_lines(name="Selected",colors="gray",alpha=0.7) %>% 
+    add_trace(name="State of Emergency Declared", x= ~STATE.OF.EMERGENCY,mode='lines') %>% 
+    add_lines(name="All states",data=state_mobility,x=~date,y=~mobility,
+              colors="black",color=~STATE,alpha=.1,showlegend=F,hoverinfo="none") %>%
+     layout(title = "Mobility Trends by State",xaxis = list(title="Date"), 
+            yaxis = list(title="% Change in Mobility from Baseline", range=c(-40, 20)))
+bscols(widths=c(2,10),
+  list(filter_select("state", "Select state to highlight for plot", sd.state, ~STATE,multiple=FALSE)),
+  subplot(p0,titleY=T)
+  )
 ```
