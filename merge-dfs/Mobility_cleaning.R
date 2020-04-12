@@ -2,7 +2,7 @@ library(readr)
 library(dplyr)
 
 # reading mobility data
-mobility <- read.csv('../county-data-wide.csv',row.names = 1,
+mobility <- read.csv('../data/county-data-wide.csv',row.names = 1,
                      stringsAsFactors=FALSE)
 
 # 'Illinois' is spelled 'inots'
