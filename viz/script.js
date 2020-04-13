@@ -22,7 +22,7 @@ tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacit
 queue()
 	.defer(
 		d3.csv,
-		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/data/county-data-long-averages.csv'
+		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/data/county-data-long-cleaned-averages.csv'
 	)
 	.defer(d3.json, 'us.json')
 	.await(ready);
@@ -144,8 +144,8 @@ function ready(error, data, us) {
 						.html(
 							'<p><strong>' +
 								d.properties.seconds[second][0].county +
-								// '</strong>, ' +
-								// d.properties.seconds[second][0].State +
+								'</strong>, ' +
+								d.properties.seconds[second][0].State +
 								'</strong></p>' +
 								'<tr><td>Change in mobility on ' +
 								dateFunctionNoYear(d.properties.seconds[second][0].seconds) +
