@@ -22,7 +22,7 @@ tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacit
 queue()
 	.defer(
 		d3.csv,
-		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/data/county-data-long-averages.csv'
+		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/data/final_merged0405-averages.csv'
 	)
 	.defer(d3.json, 'us.json')
 	.await(ready);
@@ -43,12 +43,17 @@ function dateFunctionNoYear(date) {
 function ready(error, data, us) {
 	var counties = topojson.feature(us, us.objects.counties);
 
+	var states = topojson.feature(us, us.objects.states);
+
+	console.log(states);
+
 	data.forEach(function(d) {
 		d.seconds = +new Date(d.date);
 		d.date = dateFunction(d.date);
 		d.fips = +d.fips;
 		d.value = +d.value;
-		d.county = d.Region;
+		d.county = d.sub_region_name;
+		d.State = d.region_name;
 	});
 
 	console.log(data);
@@ -144,7 +149,9 @@ function ready(error, data, us) {
 						.html(
 							'<p><strong>' +
 								d.properties.seconds[second][0].county +
-								'</strong></p>' +
+								'</strong>, ' +
+								d.properties.seconds[second][0].State +
+								'</p>' +
 								'<tr><td>Change in mobility on ' +
 								dateFunctionNoYear(d.properties.seconds[second][0].seconds) +
 								': </td><td><b>' +

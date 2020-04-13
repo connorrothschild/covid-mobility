@@ -82,4 +82,4 @@ View(mobility %>% filter(is.na(fips)) %>% group_by(State,Region) %>%
 # have to deal with these on a case-by-case basis so will simply remove them for now
 mobility <- mobility %>% select(-county_state) %>% 
   filter(!is.na(fips))
-write.csv(mobility,'mobility_cleaned.csv',row.names=FALSE)
+write.csv(mobility,'../data/mobility_cleaned.csv',row.names=FALSE)

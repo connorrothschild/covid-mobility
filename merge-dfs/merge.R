@@ -84,3 +84,19 @@ county_data_long_grouped <- county_data_long %>%
   summarise(value = mean(value, na.rm = TRUE))
 
 write.csv(county_data_long_grouped, "../data/county-data-long-averages.csv")
+
+## average of all six categories 
+county_data_wide_cleaned <- readr::read_csv("../data/mobility_cleaned.csv") 
+
+## cleaned w/ mario data
+county_data_long_cleaned <- final_merged %>% 
+  pivot_longer(c("X2020.02.16":"X2020.03.29"), names_to = "date") %>% 
+  mutate(date = gsub("X","", date, fixed = TRUE),
+         date = gsub(".", "-", date, fixed = TRUE),
+         date = lubridate::ymd(date))
+
+county_data_long_cleaned_grouped <- county_data_long_cleaned %>% 
+  group_by(Region, fips, State, date) %>% 
+  summarise(value = mean(value, na.rm = TRUE))
+
+write.csv(county_data_long_cleaned_grouped, "../data/county-data-long-cleaned-averages.csv")
