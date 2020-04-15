@@ -2,7 +2,7 @@ library(readr)
 library(dplyr)
 
 # reading mobility data
-mobility <- read.csv('../data/county-data-wide.csv',row.names = 1,
+mobility <- read.csv('../data/mobility/county/county-data-wide.csv',row.names = 1,
                      stringsAsFactors=FALSE)
 
 # 'Illinois' is spelled 'inots'
@@ -23,8 +23,8 @@ mobility$Region[mobility$State=='Virginia'] <- sapply(
   })
 
 # checking there are only 6 rows for each fips
-View(mobility %>% group_by(fips) %>% summarise(count=n()) %>% 
-       filter(count>6))
+# View(mobility %>% group_by(fips) %>% summarise(count=n()) %>% 
+#        filter(count>6))
 # 5 fips codes are repeated:
 #   24005 (Baltimore/Baltimore County (MD))
 #   51059 (Fairfax/Fairfax County (VA))
@@ -35,11 +35,11 @@ fips_many <- c(24005,51059,51067,51159,51161)
 # will look at these fips codes in ACS data to determine which to keep
 
 # reading ACS data
-ACS <- read.csv('ACS_ECONOMIC_2018.csv',stringsAsFactors=FALSE)
+ACS <- read.csv('../data/demographics/ACS_ECONOMIC_2018.csv',stringsAsFactors=FALSE)
 ACS <- ACS[-1,]
 # getting fips codes in same format
 ACS$GEO_ID <- as.numeric(substr(ACS$GEO_ID,10,14))
-View(ACS %>% filter(GEO_ID %in% fips_many) %>% select(GEO_ID,NAME))
+# View(ACS %>% filter(GEO_ID %in% fips_many) %>% select(GEO_ID,NAME))
 # the ones with "county" are the ones that are correct
 
 # Baltimore city: 24510
@@ -60,8 +60,8 @@ mobility$fips[mobility$Region=='Roanoke' &
                 mobility$State=='Virginia'] <- 51770
 
 # looking for counties with no fips code
-View(mobility %>% filter(is.na(fips)) %>% group_by(State,Region) %>% 
-       summarise(count=n()))
+# View(mobility %>% filter(is.na(fips)) %>% group_by(State,Region) %>% 
+#        summarise(count=n()))
 # 355 of them; will get their fips code from ACS data
 
 # putting county name in same format as that of ACS data
@@ -74,12 +74,30 @@ merged <- merge(mobility,ACS,by.x='county_state',by.y='NAME',all.x=TRUE)
 # replacing NAs by fips code from ACS data
 merged$fips[is.na(merged$fips)] <- merged$GEO_ID[is.na(merged$fips)]
 mobility <- merged %>% select(colnames(mobility))
-View(mobility %>% filter(is.na(fips)) %>% group_by(State,Region) %>% 
-       summarise(count=n()))
+# View(mobility %>% filter(is.na(fips)) %>% group_by(State,Region) %>% 
+#        summarise(count=n()))
 # there are still 32 counties with no fips code
 # many in Alaska have weird names: borough, municipality, etc.
 # some have data in Region column
 # have to deal with these on a case-by-case basis so will simply remove them for now
 mobility <- mobility %>% select(-county_state) %>% 
   filter(!is.na(fips))
-write.csv(mobility,'../data/mobility_cleaned.csv',row.names=FALSE)
+write.csv(mobility,'../data/mobility/county/county-data-wide-cleaned.csv',row.names=FALSE)
+
+## average of all six categories 
+county_data_wide_cleaned <- readr::read_csv("../data/mobility/county/county-data-wide-cleaned.csv") 
+
+## cleaned w/ mario data
+county_data_long_cleaned <- county_data_wide_cleaned %>% 
+  pivot_longer(c("X2020.02.16":"X2020.03.29"), names_to = "date") %>% 
+  mutate(date = gsub("X","", date, fixed = TRUE),
+         date = gsub(".", "-", date, fixed = TRUE),
+         date = lubridate::ymd(date))
+
+write.csv(county_data_long_cleaned, "../data/mobility/county/county-data-long-cleaned.csv")
+
+county_data_long_cleaned_grouped <- county_data_long_cleaned %>% 
+  group_by(Region, fips, State, date) %>% 
+  summarise(value = mean(value, na.rm = TRUE))
+
+write.csv(county_data_long_cleaned_grouped, "../data/mobility/county/county-data-long-averages.csv")
