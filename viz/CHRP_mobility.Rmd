@@ -55,7 +55,7 @@ ACS_social <- ACS_social[-1,]
 SVI_dat <- read.csv("../data/demographics/SVI2018_US_COUNTY.csv")
 
 # load mobility data
-mobility <- read.csv("../data/mobility/county/county-data-wide.csv")
+mobility <- read.csv("../data/mobility/county/county-data-wide-cleaned.csv")
 mobility <- na.omit(mobility)
 
 mobility$net_mob <- (mobility$X2020.03.22 + mobility$X2020.03.23 + mobility$X2020.03.24 + mobility$X2020.03.25 + mobility$X2020.03.26 + mobility$X2020.03.27 + mobility$X2020.03.28 + mobility$X2020.03.29)/8
