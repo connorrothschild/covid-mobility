@@ -4,7 +4,7 @@ source("theme.R")
 
 theme_set(custom_theme_map())
 
-data <- readr::read_csv("../data/county-data-long.csv")
+data <- readr::read_csv("../data/mobility/county/county-data-long-cleaned.csv")
 
 counties <- map_data("county")
 
