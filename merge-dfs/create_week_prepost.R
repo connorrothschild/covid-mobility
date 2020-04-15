@@ -34,11 +34,17 @@ prepost_column <- only_prepost %>%
 
 final <- prepost_column %>% 
   group_by(Region, fips, State, pre_post) %>% 
-  summarise(mean = mean(value, na.rm = TRUE)) 
+  summarise(average_mobility = mean(value, na.rm = TRUE)) %>% 
+  filter(!is.nan(average_mobility))
 # %>% 
 #   group_by(pre_post) %>% 
-#   summarise(mean = mean(mean, na.rm = TRUE))
+#   summarise(average_mobility = mean(average_mobility, na.rm = TRUE))
+
+write.csv(final, '../data/mobility/county/pre_post_7days.csv')
 
 final %>% 
-  ggplot(aes(x = mean, fill = pre_post)) +
-  geom_density(alpha = 0.5)
+  ggplot(aes(x = average_mobility)) +
+  geom_histogram() +
+  facet_wrap(~pre_post)
+# +
+  # scale_x_continuous(limits = c(-40,40))
