@@ -10,4 +10,4 @@ data <- data %>%
   filter(category == "state_of_emergency") %>% 
   select(-c(publish_date, category))
 
-write.csv(data, '../data/interventions/state_of_emergency_data.csv')
+write.csv(data, '../data/interventions/covid_us_county_policies.csv')
