@@ -221,11 +221,12 @@ for(n in c){
      #with = FALSE,
      by = STATE]
 }
-# Remove duplicate rows
-state_mobility <- as.data.frame(state_mobility) %>% distinct()
 # Remove uninteresting columns
 state_mobility <- state_mobility %>% select(-contains("DP")) %>% select(-contains("EP"))
 state_mobility <- subset(state_mobility, select = -c(County_FIPS, E_TOTPOP, net_mob, net_work_mob, ST_ABBR ))
+# Remove duplicate rows
+state_mobility <- as.data.frame(state_mobility) %>% distinct()
+
 
 state_policies <- read.csv("../data/covid_us_state_policies.csv")
 colnames(state_policies) <- toupper(colnames(state_policies))
@@ -247,13 +248,15 @@ sd.state <- SharedData$new(df.state, ~STATE)
 p0<-
    plot_ly(data=sd.state,x = ~date, y = ~mobility, height=750) %>% 
     add_lines(name="Selected",colors="gray",alpha=0.7) %>% 
-    add_trace(name="State of Emergency Declared", x= ~STATE.OF.EMERGENCY,mode='lines') %>% 
+    add_lines(name="State of Emergency Declared", x= ~STATE.OF.EMERGENCY) %>% 
+  add_lines(name="Stay at Home Order Given", x= ~STAY.AT.HOME..SHELTER.IN.PLACE) %>% 
     add_lines(name="All states",data=state_mobility,x=~date,y=~mobility,
-              colors="black",color=~STATE,alpha=.1,showlegend=F,hoverinfo="none") %>%
+              colors="black",color=~STATE,alpha=0.1,showlegend=F,hoverinfo="none") %>%
      layout(title = "Mobility Trends by State",xaxis = list(title="Date"), 
             yaxis = list(title="% Change in Mobility from Baseline", range=c(-40, 20)))
 bscols(widths=c(2,10),
   list(filter_select("state", "Select state to highlight for plot", sd.state, ~STATE,multiple=FALSE)),
   subplot(p0,titleY=T)
   )
+
 ```
