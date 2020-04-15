@@ -36,8 +36,8 @@ Column {data-width=500}
 ```{r}
 
 # load ACS data
-ACS_econ <- read.csv("../data/ACS_ECONOMIC_2018.csv",stringsAsFactors=FALSE)
-ACS_social <- read.csv("../data/ACS_SOCIAL_2018.csv",stringsAsFactors=FALSE)
+ACS_econ <- read.csv("../data/demographics/ACS_ECONOMIC_2018.csv",stringsAsFactors=FALSE)
+ACS_social <- read.csv("../data/demographics/ACS_SOCIAL_2018.csv",stringsAsFactors=FALSE)
 
 # rename GEO_ID to FIPS
 names(ACS_econ)[1] <- "FIPS1"
@@ -52,10 +52,10 @@ ACS_social <- ACS_social[-1,]
 
 
 # laod SVI CDC data
-SVI_dat <- read.csv("../data/SVI2018_US_COUNTY.csv")
+SVI_dat <- read.csv("../data/demographics/SVI2018_US_COUNTY.csv")
 
 # load mobility data
-mobility <- read.csv("../data/county-data-wide.csv")
+mobility <- read.csv("../data/mobility/county/county-data-wide.csv")
 mobility <- na.omit(mobility)
 
 mobility$net_mob <- (mobility$X2020.03.22 + mobility$X2020.03.23 + mobility$X2020.03.24 + mobility$X2020.03.25 + mobility$X2020.03.26 + mobility$X2020.03.27 + mobility$X2020.03.28 + mobility$X2020.03.29)/8
@@ -228,7 +228,7 @@ state_mobility <- subset(state_mobility, select = -c(County_FIPS, E_TOTPOP, net_
 state_mobility <- as.data.frame(state_mobility) %>% distinct()
 
 
-state_policies <- read.csv("../data/covid_us_state_policies.csv")
+state_policies <- read.csv("../data/policies/covid_us_state_policies.csv")
 colnames(state_policies) <- toupper(colnames(state_policies))
 state_policies$STATE <- toupper(state_policies$STATE)
 state_policies <- subset(state_policies, select = c(STATE, STATE.OF.EMERGENCY,  STAY.AT.HOME..SHELTER.IN.PLACE))
@@ -240,7 +240,7 @@ state_policies[state_policies == 0] <- NA
 state_mobility <- merge(x=state_mobility, y=state_policies, by="STATE", all.x=TRUE)
 
 # Wide form to long form
-state_mobility <- gather(state_mobility, date, mobility, X2020.02.16:X2020.03.29, factor_key=FALSE)
+state_mobility <- gather(state_mobility, date, mobility, X2020.02.17:X2020.03.29, factor_key=FALSE)
 state_mobility$date <- as.Date(state_mobility$date, format='X%Y.%m.%d')
 
 df.state<-group_by(state_mobility, STATE)
@@ -258,5 +258,4 @@ bscols(widths=c(2,10),
   list(filter_select("state", "Select state to highlight for plot", sd.state, ~STATE,multiple=FALSE)),
   subplot(p0,titleY=T)
   )
-
 ```
