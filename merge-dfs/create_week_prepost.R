@@ -42,7 +42,8 @@ final <- prepost_column %>%
             average_mobility_std = mean(value_std, na.rm = TRUE)) %>% 
   filter(!is.nan(average_mobility))
 
-write.csv(final, '../data/mobility/county/pre_post_7days.csv')
+write.csv(final, '../data/mobility/county/pre_post_7days.csv',
+          row.names = FALSE)
 
 final %>% 
   ggplot(aes(x = average_mobility)) +
