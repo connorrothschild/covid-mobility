@@ -51,7 +51,7 @@ ACS_social <- ACS_social[-1,]
 SVI_dat <- read.csv("../data/demographics/SVI2018_US_COUNTY.csv")
 
 # load mobility data
-mobility <- read.csv("../data/mobility/county/county-data-wide-cleaned.csv")
+mobility <- read.csv("../data/archived/county-data-wide-cleaned.csv")
 mobility <- na.omit(mobility)
 
 mobility$net_mob <- (mobility$X2020.03.22 + mobility$X2020.03.23 + mobility$X2020.03.24 + mobility$X2020.03.25 + mobility$X2020.03.26 + mobility$X2020.03.27 + mobility$X2020.03.28 + mobility$X2020.03.29)/8
@@ -95,7 +95,7 @@ full_dat$net_mob <- (full_dat$X2020.03.22 + full_dat$X2020.03.23 + full_dat$X202
 full_dat <- full_dat[full_dat$EP_POV > 0, ]
 
 # Demographic columns to plot
-DEMOGRAPHIC_VALUES <- c("Median Household Income", "Mean Commute Time", 
+DEMOGRAPHIC_VALUES <- c("Median Household Income ($)", "Mean Commute Time (min)", 
                         "% Service Jobs", "% Sales/Office Jobs", "% Production/Transport Jobs",
                         "% Below Poverty",
                         "% Asian", "% White", "% African-American", "% Hispanic/Latino", "% Minority")
@@ -183,7 +183,7 @@ ui <- fluidPage(
                         column(6,
                                selectInput(inputId = "state_selected",
                                            label = "Select State",
-                                           choices = levels(ALL_STATES),
+                                           choices = stringr::str_to_title(levels(ALL_STATES)),
                                            selected = "ALABAMA",
                                            width = "220px"),
                                checkboxGroupInput(inputId = "selected_policies",
@@ -209,9 +209,9 @@ server <- function(input, output) {
   histdata <- rnorm(500)
   
   get_demographic_column <- function(name){
-    if (name == "Median Household Income") {
+    if (name == "Median Household Income ($)") {
       x <- as.numeric(full_dat$DP03_0062E)
-    } else if (name == "Mean Commute Time") {
+    } else if (name == "Mean Commute Time (min)") {
       x <- as.numeric(full_dat$DP03_0025E)
     } else if (name == "% Service Jobs") {
       x <- as.numeric(full_dat$DP03_0028PE)
@@ -253,12 +253,13 @@ server <- function(input, output) {
     x <- get_demographic_column(input$DemographicsSelector)
     y <- get_mobility_column(input$MobilitySelector)
     
+    options(scipen = 999)
     
     ggplot(full_dat, aes(x=x,y=y)) + 
       geom_point(color="aquamarine3") + 
       geom_smooth(method='lm',color="aquamarine4") + 
       xlab(input$DemographicsSelector) + 
-      ylab(paste("Average Change in", input$MobilitySelector, "Mobility, 3/22-3/29"))
+      ylab(paste("Average Change in", input$MobilitySelector, "Mobility, 3/22-3/29")) 
   })
   
   output$demo_correlation_table<-DT::renderDataTable({
@@ -271,7 +272,7 @@ server <- function(input, output) {
     rownames(cor_tab) <- c(input$DemographicsSelector)
     colnames(cor_tab) <- c("Pearson's r","p-value")
     
-    DT::datatable(cor_tab)
+    DT::datatable(cor_tab, options = list(dom = 't'))
   })
   output$policy_mobility <- renderPlot({
     selected_state_mobility <- state_mobility[which(toupper(state_mobility$STATE) == toupper(input$state_selected)), ]
