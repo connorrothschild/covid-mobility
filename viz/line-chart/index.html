@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="./styles.css"></link>
+        <title>Explore How Your County Has Social Distanced</title>
+
+        <meta name="twitter:card" content="summary_large_image" >
+        <meta name="twitter:site" content="@CL_Rothschild" >
+        <meta name="twitter:creator" content="@CL_Rothschild" >
+        <meta name="twitter:title" content="Explore How Your County Has Social Distanced" >
+        <!-- <meta name="twitter:description" content="" > -->
+        <meta name="twitter:image" content="https://raw.githubusercontent.com/connorrothschild/D3.js/master/quarantine-trends/thumbnail.jpg" >
+    
+        <link rel="icon" target="_blank" href="https://raw.githubusercontent.com/connorrothschild/connorrothschild.github.io/master/me/favicon.ico">
+
+    </head>
+    <body>
+      
+      <div id="my_dataviz" class = "my_dataviz">
+
+        <div>
+          <p class = "titleText">After COVID-19, how has community movement changed in 
+            <input list="cityState" id="locSelector" name="locSelector" class = "dropdown" placeholder = "Harris County, Texas"/>
+        <datalist id="cityState" class = "dropdown">
+        </datalist>?
+      </p>
+      
+      <div id="tooltip" class="tooltip">
+        <div class="tooltip-date">
+            <span id="date"></span>
+        </div>
+        <div class="tooltip-interest">
+          Changes in mobility: <span id="interest"></span>
+      </div>
+      </div>
+
+        <div id="toolbar">
+          Category:
+          <button id="Workplace" class="button active">Workplace</button>
+          <button id="Retail & recreation" class="button">Retail & recreation</button>
+          <button id="Parks" class="button">Parks</button>
+          <button id="Residential" class="button">Residential</button>
+          <button id="Grocery & pharmacy" class="button">Grocery & pharmacy</button>
+          <button id="Transit stations" class="button">Transit stations</button>
+        </div>
+
+      <!-- <footer>Source: Google's COVID-19 Community Mobility Reports</footer> -->
+      
+      <script src="https://d3js.org/d3.v4.js"></script>
+      <script src="./script.js"></script>
+      <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    </body>
+
+</html>
