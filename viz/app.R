@@ -51,7 +51,7 @@ ACS_social <- ACS_social[-1,]
 SVI_dat <- read.csv("../data/demographics/SVI2018_US_COUNTY.csv")
 
 # load mobility data
-mobility <- read.csv("../data/mobility/county/county-data-wide-cleaned.csv")
+mobility <- read.csv("../data/archived/county-data-wide-cleaned.csv")
 mobility <- na.omit(mobility)
 
 mobility$net_mob <- (mobility$X2020.03.22 + mobility$X2020.03.23 + mobility$X2020.03.24 + mobility$X2020.03.25 + mobility$X2020.03.26 + mobility$X2020.03.27 + mobility$X2020.03.28 + mobility$X2020.03.29)/8
@@ -68,6 +68,12 @@ names(mobility_agg)[1] <- "County_FIPS"
 
 
 mobility_work <- cbind("FIPS3"=mobility$fips[mobility$Category=="Workplace"],"net_work_mob"=mobility$net_mob[mobility$Category=="Workplace"])
+mobility_residential <- cbind("FIPS4"=mobility$fips[mobility$Category=="Residential"],"net_res_mob"=mobility$net_mob[mobility$Category=="Residential"])
+mobility_retaill <- cbind("FIPS5"=mobility$fips[mobility$Category=="Retail & recreation"],"net_retail_mob"=mobility$net_mob[mobility$Category=="Retail & recreation"])
+mobility_grocery <- cbind("FIPS6"=mobility$fips[mobility$Category=="Grocery & pharmacy"],"net_grocery_mob"=mobility$net_mob[mobility$Category=="Grocery & pharmacy"])
+mobility_transit <- cbind("FIPS7"=mobility$fips[mobility$Category=="Transit stations"],"net_transit_mob"=mobility$net_mob[mobility$Category=="Transit stations"])
+mobility_parks <- cbind("FIPS8"=mobility$fips[mobility$Category=="Parks"],"net_parks_mob"=mobility$net_mob[mobility$Category=="Parks"])
+
 
 # select relevant columns from SVI data
 SVI_sub <- SVI_dat[,c("FIPS", "STATE", "ST_ABBR","E_TOTPOP","EP_POV","EP_UNEMP","EP_PCI","EP_AGE65","EP_MINRTY","EP_MUNIT")]
@@ -87,6 +93,11 @@ full_dat <- merge(mobility_agg, SVI_sub, by.x="County_FIPS", by.y="FIPS")
 full_dat <- merge(full_dat, ACS_social_sub,  by.x="County_FIPS", by.y="FIPS2", all.x = TRUE)
 full_dat <- merge(full_dat, ACS_econ_sub,  by.x="County_FIPS", by.y="FIPS1", all.x = TRUE)
 full_dat <- merge(full_dat, mobility_work,  by.x="County_FIPS", by.y="FIPS3", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_residential,  by.x="County_FIPS", by.y="FIPS4", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_retaill,  by.x="County_FIPS", by.y="FIPS5", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_grocery,  by.x="County_FIPS", by.y="FIPS6", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_transit,  by.x="County_FIPS", by.y="FIPS7", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_parks,  by.x="County_FIPS", by.y="FIPS8", all.x = TRUE)
 
 # get average change in mobility for last week in data
 full_dat$net_mob <- (full_dat$X2020.03.22 + full_dat$X2020.03.23 + full_dat$X2020.03.24 + full_dat$X2020.03.25 + full_dat$X2020.03.26 + full_dat$X2020.03.27 + full_dat$X2020.03.28 + full_dat$X2020.03.29)/8
@@ -95,7 +106,7 @@ full_dat$net_mob <- (full_dat$X2020.03.22 + full_dat$X2020.03.23 + full_dat$X202
 full_dat <- full_dat[full_dat$EP_POV > 0, ]
 
 # Demographic columns to plot
-DEMOGRAPHIC_VALUES <- c("Median Household Income", "Mean Commute Time", 
+DEMOGRAPHIC_VALUES <- c("Median Household Income ($)", "Mean Commute Time (min)", 
                         "% Service Jobs", "% Sales/Office Jobs", "% Production/Transport Jobs",
                         "% Below Poverty",
                         "% Asian", "% White", "% African-American", "% Hispanic/Latino", "% Minority")
@@ -150,7 +161,8 @@ ui <- fluidPage(
                                                width = "220px"),
                                    radioButtons(inputId = "MobilitySelector",
                                                 label = "Display:",
-                                                choices = c("Aggregate", "Workplace", ""),
+                                                choices = c("Aggregate", "Workplace", "Residential",
+                                                            "Retail & recreation", "Parks", "Grocery & pharmacy", "Transit stations"),
                                                 selected = "Aggregate")
                                    
                         )),
@@ -183,7 +195,7 @@ ui <- fluidPage(
                         column(6,
                                selectInput(inputId = "state_selected",
                                            label = "Select State",
-                                           choices = levels(ALL_STATES),
+                                           choices = stringr::str_to_title(levels(ALL_STATES)),
                                            selected = "ALABAMA",
                                            width = "220px"),
                                checkboxGroupInput(inputId = "selected_policies",
@@ -209,9 +221,9 @@ server <- function(input, output) {
   histdata <- rnorm(500)
   
   get_demographic_column <- function(name){
-    if (name == "Median Household Income") {
+    if (name == "Median Household Income ($)") {
       x <- as.numeric(full_dat$DP03_0062E)
-    } else if (name == "Mean Commute Time") {
+    } else if (name == "Mean Commute Time (min)") {
       x <- as.numeric(full_dat$DP03_0025E)
     } else if (name == "% Service Jobs") {
       x <- as.numeric(full_dat$DP03_0028PE)
@@ -240,11 +252,18 @@ server <- function(input, output) {
       y <- full_dat$net_mob
     } else if (name == "Workplace") {
       y <- full_dat$net_work_mob
-    } else if (name == "") {
-      
-    } else if (name == "") {
-      
+    } else if (name == "Residential") {
+      y <- full_dat$net_res_mob
+    } else if (name == "Retail & recreation") {
+      y <- full_dat$net_retail_mob
+    } else if (name == "Grocery & pharmacy") {
+      y <- full_dat$net_grocery_mob
+    } else if (name == "Transit stations") {
+      y <- full_dat$net_transit_mob
+    } else if (name == "Parks") {
+      y <- full_dat$net_parks_mob
     }
+    
     return(y)
   }
 
@@ -253,12 +272,13 @@ server <- function(input, output) {
     x <- get_demographic_column(input$DemographicsSelector)
     y <- get_mobility_column(input$MobilitySelector)
     
+    options(scipen = 999)
     
     ggplot(full_dat, aes(x=x,y=y)) + 
       geom_point(color="aquamarine3") + 
       geom_smooth(method='lm',color="aquamarine4") + 
       xlab(input$DemographicsSelector) + 
-      ylab(paste("Average Change in", input$MobilitySelector, "Mobility, 3/22-3/29"))
+      ylab(paste("Average Change in", input$MobilitySelector, "Mobility, 3/22-3/29")) 
   })
   
   output$demo_correlation_table<-DT::renderDataTable({
@@ -271,7 +291,7 @@ server <- function(input, output) {
     rownames(cor_tab) <- c(input$DemographicsSelector)
     colnames(cor_tab) <- c("Pearson's r","p-value")
     
-    DT::datatable(cor_tab)
+    DT::datatable(cor_tab, options = list(dom = 't'))
   })
   output$policy_mobility <- renderPlot({
     selected_state_mobility <- state_mobility[which(toupper(state_mobility$STATE) == toupper(input$state_selected)), ]
