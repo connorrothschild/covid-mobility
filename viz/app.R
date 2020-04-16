@@ -200,7 +200,7 @@ ui <- fluidPage(
                                            width = "220px"),
                                checkboxGroupInput(inputId = "selected_policies",
                                                   label = "Select Policies:",
-                                                  choices = c("State of Emergency", "Stay at Home", "Non-Essential Businesses"),
+                                                  choices = c("State of Emergency", "Stay at Home", "Closed Non-essential Businesses"),
                                                   selected = "State of Emergency")
                         )
                       ),
@@ -300,13 +300,17 @@ server <- function(input, output) {
     selected_state_of_emergency <- selected_state_policies[1, "STATE.OF.EMERGENCY"]
     selected_stay_at_home <- selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
     selected_closed_business <- selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
-    
+    print(selected_state_of_emergency)
+    print(selected_stay_at_home)
+    print(selected_closed_business)
+    print(input$selected_policies)
     
     p <- ggplot(data=state_mobility, aes(x = date, y = mobility)) +
       geom_line(color="gray", alpha=0.3, group = state_mobility$STATE) +
       geom_line(data = selected_state_mobility, color="blue", alpha=1)
 
     if ("State of Emergency" %in% input$selected_policies) {
+      p <- p + geom_vline(aes(xintercept=selected_state_of_emergency, color = "State of Emergency"), alpha=0.5, show.legend=T)
     }
     if ("Stay at Home" %in% input$selected_policies) {
       p <- p + geom_vline(aes(xintercept=selected_stay_at_home, color = "Stay at Home"), alpha=0.5, show.legend=T)
