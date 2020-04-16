@@ -67,7 +67,8 @@ mobility_agg<-unique(mobility_agg)
 names(mobility_agg)[1] <- "County_FIPS"
 
 
-mobility_work <- cbind("FIPS3"=mobility$fips[mobility$Category=="Workplace"],"net_work_mob"=mobility$net_mob[mobility$Category=="Workplace"])
+mobility_work <- cbind("FIPS3"=mobility$fips[mobility$Category=="Workplace"],
+                       "net_work_mob"=mobility$net_mob[mobility$Category=="Workplace"])
 
 # select relevant columns from SVI data
 SVI_sub <- SVI_dat[,c("FIPS", "STATE", "ST_ABBR","E_TOTPOP","EP_POV","EP_UNEMP","EP_PCI","EP_AGE65","EP_MINRTY","EP_MUNIT")]
