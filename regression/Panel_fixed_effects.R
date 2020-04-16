@@ -88,7 +88,7 @@ colnames(df_all)[(ncol(df_all)-14):ncol(df_all)] <- sapply(
 )
 
 # difference between actual and mean values
-tildes <- df_all %>% 
+tilde <- df_all %>% 
   select(c(value_std,policy,cases,deaths,cases_nat,deaths_nat,
            sapply(ACS_cols,function(x){paste0(x,'_int')}))) -
   df_all %>% 
@@ -97,4 +97,4 @@ tildes <- df_all %>%
            sapply(ACS_cols,function(x){paste0(x,'_int_mean')})))
 
 # regression
-fit <- lm(value_std~.,data = tildes)
+fit <- lm(value_std~.,data = tilde)
