@@ -38,11 +38,9 @@ prepost_column <- only_prepost %>%
 
 final <- prepost_column %>% 
   group_by(admin1,admin2,fips,pre_post) %>% 
-  summarise(average_mobility = mean(value, na.rm = TRUE)) %>% 
+  summarise(average_mobility = mean(value, na.rm = TRUE),
+            average_mobility_std = mean(value_std, na.rm = TRUE)) %>% 
   filter(!is.nan(average_mobility))
-# %>% 
-#   group_by(pre_post) %>% 
-#   summarise(average_mobility = mean(average_mobility, na.rm = TRUE))
 
 write.csv(final, '../data/mobility/county/pre_post_7days.csv')
 
