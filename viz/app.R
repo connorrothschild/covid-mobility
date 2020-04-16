@@ -68,6 +68,12 @@ names(mobility_agg)[1] <- "County_FIPS"
 
 
 mobility_work <- cbind("FIPS3"=mobility$fips[mobility$Category=="Workplace"],"net_work_mob"=mobility$net_mob[mobility$Category=="Workplace"])
+mobility_residential <- cbind("FIPS4"=mobility$fips[mobility$Category=="Residential"],"net_res_mob"=mobility$net_mob[mobility$Category=="Residential"])
+mobility_retaill <- cbind("FIPS5"=mobility$fips[mobility$Category=="Retail & recreation"],"net_retail_mob"=mobility$net_mob[mobility$Category=="Retail & recreation"])
+mobility_grocery <- cbind("FIPS6"=mobility$fips[mobility$Category=="Grocery & pharmacy"],"net_grocery_mob"=mobility$net_mob[mobility$Category=="Grocery & pharmacy"])
+mobility_transit <- cbind("FIPS7"=mobility$fips[mobility$Category=="Transit stations"],"net_transit_mob"=mobility$net_mob[mobility$Category=="Transit stations"])
+mobility_parks <- cbind("FIPS8"=mobility$fips[mobility$Category=="Parks"],"net_parks_mob"=mobility$net_mob[mobility$Category=="Parks"])
+
 
 # select relevant columns from SVI data
 SVI_sub <- SVI_dat[,c("FIPS", "STATE", "ST_ABBR","E_TOTPOP","EP_POV","EP_UNEMP","EP_PCI","EP_AGE65","EP_MINRTY","EP_MUNIT")]
@@ -87,6 +93,11 @@ full_dat <- merge(mobility_agg, SVI_sub, by.x="County_FIPS", by.y="FIPS")
 full_dat <- merge(full_dat, ACS_social_sub,  by.x="County_FIPS", by.y="FIPS2", all.x = TRUE)
 full_dat <- merge(full_dat, ACS_econ_sub,  by.x="County_FIPS", by.y="FIPS1", all.x = TRUE)
 full_dat <- merge(full_dat, mobility_work,  by.x="County_FIPS", by.y="FIPS3", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_residential,  by.x="County_FIPS", by.y="FIPS4", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_retaill,  by.x="County_FIPS", by.y="FIPS5", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_grocery,  by.x="County_FIPS", by.y="FIPS6", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_transit,  by.x="County_FIPS", by.y="FIPS7", all.x = TRUE)
+full_dat <- merge(full_dat, mobility_parks,  by.x="County_FIPS", by.y="FIPS8", all.x = TRUE)
 
 # get average change in mobility for last week in data
 full_dat$net_mob <- (full_dat$X2020.03.22 + full_dat$X2020.03.23 + full_dat$X2020.03.24 + full_dat$X2020.03.25 + full_dat$X2020.03.26 + full_dat$X2020.03.27 + full_dat$X2020.03.28 + full_dat$X2020.03.29)/8
@@ -150,7 +161,8 @@ ui <- fluidPage(
                                                width = "220px"),
                                    radioButtons(inputId = "MobilitySelector",
                                                 label = "Display:",
-                                                choices = c("Aggregate", "Workplace", ""),
+                                                choices = c("Aggregate", "Workplace", "Residential",
+                                                            "Retail & recreation", "Parks", "Grocery & pharmacy", "Transit stations"),
                                                 selected = "Aggregate")
                                    
                         )),
@@ -240,11 +252,18 @@ server <- function(input, output) {
       y <- full_dat$net_mob
     } else if (name == "Workplace") {
       y <- full_dat$net_work_mob
-    } else if (name == "") {
-      
-    } else if (name == "") {
-      
+    } else if (name == "Residential") {
+      y <- full_dat$net_res_mob
+    } else if (name == "Retail & recreation") {
+      y <- full_dat$net_retail_mob
+    } else if (name == "Grocery & pharmacy") {
+      y <- full_dat$net_grocery_mob
+    } else if (name == "Transit stations") {
+      y <- full_dat$net_transit_mob
+    } else if (name == "Parks") {
+      y <- full_dat$net_parks_mob
     }
+    
     return(y)
   }
 
