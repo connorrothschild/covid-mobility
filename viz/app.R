@@ -136,7 +136,7 @@ ALL_STATES <- unique(state_mobility$STATE)
 ui <- fluidPage(
   #Navbar structure for UI
   navbarPage("Mobility", theme = shinytheme("lumen"),
-             tabPanel("Effects of Demographics on Mobility", fluid = TRUE, icon = icon("globe-americas"),
+             tabPanel("Effects of Demographics on Mobility", fluid = TRUE, icon = icon("address-book"),
                       #tags$style(button_color_css),
                       # Sidebar layout with a input and output definitions
                       sidebarLayout(
@@ -177,7 +177,7 @@ ui <- fluidPage(
                         )
                       
               ),
-             tabPanel("Policies and Mobility", fluid = TRUE, icon = icon("swimmer"),
+             tabPanel("Policies and Mobility", fluid = TRUE, icon = icon("poll"),
                       titlePanel("Policies and Mobility"),
                       fluidRow(
                         column(6,
@@ -262,23 +262,13 @@ server <- function(input, output) {
   })
   
   output$demo_correlation_table<-DT::renderDataTable({
+    x <- get_demographic_column(input$DemographicsSelector)
+    y <- get_mobility_column(input$MobilitySelector)
+
+    test <- cor.test(x, y)
     
-    # Income correlation
-    inc <- cor.test(full_dat$DP03_0062E,full_dat$net_work_mob)
-    # Commute correlation
-    com <- cor.test(full_dat$DP03_0025E,full_dat$net_work_mob)
-    # Service correlation
-    serv <-cor.test(full_dat$DP03_0028PE,full_dat$net_work_mob)
-    # Sales/Office 
-    sale <- cor.test(full_dat$DP03_0029PE,full_dat$net_work_mob)
-    # Production/Transport
-    prod <- cor.test(full_dat$DP03_0031PE,full_dat$net_work_mob)
-    
-    correl <- c(-0.480,-0.176,0.024,-0.284,0.302)
-    p_values <- c("< 2.2e-16","< 2.2e-16","0.2605","< 2.2e-16","< 2.2e-16")
-    
-    cor_tab <- cbind(correl, p_values)
-    rownames(cor_tab) <- c("Income","Commute","Service","Sales/Office","Production/Transport")
+    cor_tab <- cbind(c(test$estimate), c(test$p.value))
+    rownames(cor_tab) <- c(input$DemographicsSelector)
     colnames(cor_tab) <- c("Pearson's r","p-value")
     
     DT::datatable(cor_tab)
@@ -295,10 +285,8 @@ server <- function(input, output) {
     p <- ggplot(data=state_mobility, aes(x = date, y = mobility)) +
       geom_line(color="gray", alpha=0.3, group = state_mobility$STATE) +
       geom_line(data = selected_state_mobility, color="blue", alpha=1)
-    print(input$selected_policies)
-    c("State of Emergency", "Stay at Home", "Non-Essential Businesses")
+
     if ("State of Emergency" %in% input$selected_policies) {
-      p <- p + geom_vline(aes(xintercept=selected_state_of_emergency, color = "State of Emergency"), alpha=0.75, show.legend=T) 
     }
     if ("Stay at Home" %in% input$selected_policies) {
       p <- p + geom_vline(aes(xintercept=selected_stay_at_home, color = "Stay at Home"), alpha=0.5, show.legend=T)
