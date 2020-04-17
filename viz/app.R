@@ -17,6 +17,7 @@ library(shinycssloaders)
 library(shinythemes)
 library(SwimmeR)
 library(plotly)
+library(r2d3)
 
 
 thm <-
@@ -46,8 +47,8 @@ names(ACS_social)[1] <- "FIPS2"
 ACS_econ$FIPS1 = substr(ACS_econ$FIPS, 10, 14)
 ACS_social$FIPS2 = substr(ACS_social$FIPS, 10, 14)
 
-ACS_econ <- ACS_econ[-1, ]
-ACS_social <- ACS_social[-1, ]
+ACS_econ <- ACS_econ[-1,]
+ACS_social <- ACS_social[-1,]
 
 ACS_social_sub <-
   ACS_social[, c(
@@ -221,7 +222,7 @@ full_dat$net_mob <-
   ) / 8
 
 # Remove bad data
-full_dat <- full_dat[full_dat$EP_POV > 0,]
+full_dat <- full_dat[full_dat$EP_POV > 0, ]
 
 
 # Demographic columns to plot
@@ -303,7 +304,8 @@ ALL_STATES <- unique(state_mobility$STATE)
 
 
 ###### SHINY DASHBOARD UI
-ui <- fluidPage(#Navbar structure for UI
+ui <- fluidPage(
+  #Navbar structure for UI
   navbarPage(
     "Mobility",
     theme = shinytheme("lumen"),
@@ -394,10 +396,40 @@ ui <- fluidPage(#Navbar structure for UI
       hr(),
       fluidRow(withSpinner(
         plotlyOutput(outputId = "policy_mobility"
-                     # brush = "brush_SchoolComp")
+                     # brush = "brush_SchoolComp"))
         ))
+      ),
+      tabPanel(
+        "See the map",
+        fluid = TRUE,
+        icon = icon("globe-americas"),
+        # titlePanel("How does your county compare?"),
+        fluidRow(
+          tags$iframe(
+            seamless = "seamless",
+            src = "https://connorrothschild.github.io/covid-mobility/viz/",
+            height = 800,
+            width = 1400
+          )
+        )
+      ),
+      tabPanel(
+        "How does your county compare?",
+        fluid = TRUE,
+        icon = icon("map"),
+        # titlePanel("How does your county compare?"),
+        fluidRow(
+          tags$iframe(
+            seamless = "seamless",
+            src = "https://connorrothschild.github.io/covid-mobility/viz/line-chart",
+            height = 800,
+            width = 1400
+          )
+        )
       )
-    )))
+    )
+  )
+  
   
   ###### SHINY DASHBOARD INTERACTION
   server <- function(input, output, session) {
@@ -464,7 +496,9 @@ ui <- fluidPage(#Navbar structure for UI
       
       p <- ggplot(dat, aes(x = x, y = y)) +
         geom_point(aes(text = paste0(COUNTY, " County, ", STATE)), color = "aquamarine3") +
-        geom_smooth(method = 'lm', formula=y~x, color = "aquamarine4") +
+        geom_smooth(method = 'lm',
+                    formula = y ~ x,
+                    color = "aquamarine4") +
         xlab(input$DemographicsSelector) +
         ylab(paste(
           "Average Change in",
@@ -488,9 +522,9 @@ ui <- fluidPage(#Navbar structure for UI
     })
     output$policy_mobility <- renderPlotly({
       selected_state_mobility <-
-        state_mobility[which(toupper(state_mobility$STATE) == toupper(input$state_selected)),]
+        state_mobility[which(toupper(state_mobility$STATE) == toupper(input$state_selected)), ]
       selected_state_policies <-
-        state_policies[which(toupper(state_policies$STATE) == toupper(input$state_selected)),]
+        state_policies[which(toupper(state_policies$STATE) == toupper(input$state_selected)), ]
       
       selected_state_of_emergency <-
         selected_state_policies[1, "STATE.OF.EMERGENCY"]
@@ -499,7 +533,8 @@ ui <- fluidPage(#Navbar structure for UI
       selected_closed_business <-
         selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
       
-      p <- ggplot(data = state_mobility, aes(x = date, y = mobility)) +
+      p <-
+        ggplot(data = state_mobility, aes(x = date, y = mobility)) +
         geom_line(color = "gray",
                   alpha = 0.3,
                   group = state_mobility$STATE) +
