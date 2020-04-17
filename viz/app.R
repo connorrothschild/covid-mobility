@@ -16,6 +16,7 @@ library(ggrepel)
 library(shinycssloaders)
 library(shinythemes)
 library(SwimmeR)
+library(r2d3)
 
 
 thm <- 
@@ -210,6 +211,20 @@ ui <- fluidPage(
                                                       # brush = "brush_SchoolComp"
                                ))
                         
+                      )
+             ),
+             tabPanel("See the map", fluid = TRUE, icon = icon("globe-americas"),
+                      # titlePanel("How does your county compare?"),
+                      fluidRow(
+                        tags$iframe(seamless = "seamless", src = "https://connorrothschild.github.io/covid-mobility/viz/",
+                                    height = 800, width = 1400)
+                      )
+             ),
+             tabPanel("How does your county compare?", fluid = TRUE, icon = icon("map"),
+                      # titlePanel("How does your county compare?"),
+                      fluidRow(
+                        tags$iframe(seamless = "seamless", src = "https://connorrothschild.github.io/covid-mobility/viz/line-chart",
+                                    height = 800, width = 1400)
                       )
              )
   )
