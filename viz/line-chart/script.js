@@ -1,5 +1,5 @@
 let dimensions = {
-	width  : window.innerWidth * 0.8,
+	width  : 1000,
 	height : 400,
 	margin : {
 		top    : 15,
