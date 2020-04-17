@@ -530,7 +530,7 @@ server <- function(input, output, session) {
     p <- ggplot(dat, aes(x = x, y = y)) +
       geom_point(alpha = .5, aes(text = paste0("<b>", COUNTY, " County, ", stringr::str_to_title(STATE), "</b>",
                                        '<br>', '<i>Change in ', input$MobilitySelector, ' Mobility:</i> ', round(y, digits = 0), "%",
-                                       '<br><i>', input$DemographicsSelector, ':</i> ', scales::comma(x)
+                                       '<br><i>', input$DemographicsSelector, ':</i> ', scales::comma(x, accuracy = 1)
                                        ),
                      
                      ), 
@@ -580,7 +580,7 @@ server <- function(input, output, session) {
                 group = state_mobility$STATE,
                 aes(text = paste0('<b>', stringr::str_to_title(STATE), "</b><br>", format(date, format = "%B %d"), ": ", round(mobility, 1), "%"))) +
       geom_line(data = selected_state_mobility,
-                color = "blue",
+                color = "steelblue",
                 alpha = 1,
                 size = 1, 
                 group = selected_state_mobility$STATE,
@@ -641,11 +641,21 @@ server <- function(input, output, session) {
     
     coeff = 1/((max(selected$cases)-min(selected$cases))/(max(selected$mobility)-min(selected$mobility)))
     
-    p <- ggplot(case_mobility, aes(x=date)) +
+    p <- ggplot() +
       
-      geom_line(data=selected, aes(y=cases), color='slateblue2') +
-      geom_line(data=selected, aes(y=mobility/coeff), color='seagreen3') +
-      
+      geom_point(data=selected, size = 1, aes(x=date, y=cases,
+                                    text = paste0('<b>', format(date, format = "%B %d"), " in ", stringr::str_to_title(STATE), '</b>',
+                                                  "<br><i>Cases:</i> ", scales::comma(cases, accuracy = 1))), 
+                                   color='steelblue') +
+      geom_line(data=selected, aes(x=date, y=cases), 
+                                   color='steelblue') +
+      geom_point(data=selected, size = 1, aes(x=date, y=mobility/coeff,
+                                   text = paste0('<b>', format(date, format = "%B %d"), " in ", stringr::str_to_title(STATE), '</b>',
+                                                 "<br><i>Mobility:</i> ", round(mobility, 1), "%")), 
+                                   color='seagreen3') +
+      geom_line(data=selected, aes(x=date, y=mobility/coeff),
+                                  color='seagreen3') +
+                        
       scale_y_continuous(
         
         # Features of the first axis
@@ -657,15 +667,15 @@ server <- function(input, output, session) {
       
       labs(
         x = "Date"
-      )
+      ) + 
       
       theme(
-        axis.title.y = element_text(color = 'slateblue2', size=13),
-        axis.title.y.right = element_text(color = 'seagreen3', size=13)
+        # axis.title.y = element_text(color = 'slateblue2', size=13),
+        # axis.title.y.right = element_text(color = 'seagreen3', size=13)
       ) +
       
       ggtitle("Cases vs. Mobility")
-    ggplotly(p)
+    ggplotly(p, tooltip = 'text')
   })
   
   output$case_policy <- renderPlotly({
@@ -681,8 +691,10 @@ server <- function(input, output, session) {
     # print(selected_closed_business)
     
     p <- ggplot(data=state_cases, aes(x = date, y = cases)) +
-      geom_line(data = selected_state_cases, color="blue", stat="identity") + 
-      geom_point(data = selected_state_cases, size = 1, color="blue", stat="identity") +    
+      geom_line(data = selected_state_cases, color="steelblue", stat="identity") + 
+      geom_point(data = selected_state_cases, size = 1, color="steelblue", stat="identity",
+                 aes(text = paste0('<b>', format(date, format = "%B %d"), " in ", stringr::str_to_title(STATE), '</b>',
+                               "<br><i>Cases:</i> ", scales::comma(cases, accuracy = 1)))) +       
       geom_vline(aes(xintercept=as.numeric(selected_state_of_emergency), color = "State of Emergency"), alpha=0.75, show.legend=T) + 
       geom_vline(aes(xintercept=as.numeric(selected_stay_at_home), color = "Stay at Home"), alpha=0.5, show.legend=T) +
       geom_vline(aes(xintercept=as.numeric(selected_closed_business), color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T) +
@@ -691,7 +703,8 @@ server <- function(input, output, session) {
       labs(x = "Date", y = "Cases") +
       theme(legend.position="bottom")
     
-    ggplotly(p)
+    ggplotly(p, tooltip = "text") %>% 
+      layout(legend = list(orientation = "h", x = -0.05, y = -0.2))
   })
 }
 
