@@ -681,7 +681,8 @@ server <- function(input, output, session) {
       ) +
       
       ggtitle("Cases vs. Mobility")
-    ggplotly(p, tooltip = 'text')
+    ggplotly(p, tooltip = 'text') %>% 
+      layout(legend = list(orientation = "h", x = -0.05, y = -0.2))
   })
 }
 
