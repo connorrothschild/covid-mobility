@@ -661,9 +661,9 @@ server <- function(input, output, session) {
     p <- ggplot(data=state_cases, aes(x = date, y = cases)) +
       geom_line(data = selected_state_cases, color="blue", stat="identity") + 
       geom_point(data = selected_state_cases, color="blue", stat="identity") +    
-      geom_vline(aes(xintercept=selected_state_of_emergency, color = "State of Emergency"), alpha=0.75, show.legend=T) + 
-      geom_vline(aes(xintercept=selected_stay_at_home, color = "Stay at Home"), alpha=0.5, show.legend=T) +
-      geom_vline(aes(xintercept=selected_closed_business, color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T) +
+      geom_vline(aes(xintercept=as.numeric(selected_state_of_emergency), color = "State of Emergency"), alpha=0.75, show.legend=T) + 
+      geom_vline(aes(xintercept=as.numeric(selected_stay_at_home), color = "Stay at Home"), alpha=0.5, show.legend=T) +
+      geom_vline(aes(xintercept=as.numeric(selected_closed_business), color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T) +
       scale_color_manual(name = "Policies", values = c("Stay at Home" = "red", "State of Emergency" = "green", "Closed Non-essential Businesses" = "cyan")) +
       scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
       labs(x = "Date", y = "Cases") +
