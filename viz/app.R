@@ -411,7 +411,7 @@ ui <- fluidPage(
       # titlePanel("How does your county compare?"),
       fluidRow(
         tags$iframe(
-          seamless = "seamless",
+          seamless = NA,
           src = "https://connorrothschild.github.io/covid-mobility/viz/",
           height = 800,
           width = 1400
@@ -425,7 +425,7 @@ ui <- fluidPage(
       # titlePanel("How does your county compare?"),
       fluidRow(
         tags$iframe(
-          seamless = "seamless",
+          seamless = NA,
           src = "https://connorrothschild.github.io/covid-mobility/viz/line-chart",
           height = 800,
           width = 1400
