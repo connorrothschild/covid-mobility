@@ -28,6 +28,8 @@ thm <-
     xAxis = list(gridLineWidth = 1)
   )
 
+source('theme.R')
+theme_set(custom_theme_print())
 
 # load ACS data
 ACS_econ <-
@@ -303,6 +305,12 @@ state_mobility$date <- as.Date(state_mobility$date)
 
 ###### SHINY DASHBOARD UI
 ui <- fluidPage(
+  #CSS 
+  
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+  ),
+  
   #Navbar structure for UI
   navbarPage(
     "Mobility",
@@ -349,7 +357,7 @@ ui <- fluidPage(
             selectizeInput(
               "StateSelector",
               "Select your State",
-              choices = ALL_STATES,
+              choices = stringr::str_to_title(levels(ALL_STATES)),
               multiple = TRUE
             )
           )),
@@ -376,8 +384,8 @@ ui <- fluidPage(
         selectInput(
           inputId = "state_selected",
           label = "Select State",
-          choices = stringr::str_to_title(levels(ALL_STATES)),
-          selected = "ALABAMA",
+          choices = stringr::str_to_title(ALL_STATES),
+          selected = stringr::str_to_title(ALL_STATES)[1],
           width = "220px"
         ),
         checkboxGroupInput(
@@ -436,8 +444,8 @@ ui <- fluidPage(
             selectInput(
               inputId = "CaseStateSelector",
               label = "Select State",
-              choices = ALL_STATES,
-              selected = ALL_STATES[1],
+              choices = stringr::str_to_title(levels(ALL_STATES)),
+              selected = stringr::str_to_title(ALL_STATES)[1],
               width = "220px"
             ),
           )
@@ -514,13 +522,19 @@ server <- function(input, output, session) {
     dat <- full_dat
     if (!is.null(input$StateSelector)) {
       dat <- full_dat %>%
-        filter(STATE %in% input$StateSelector)
+        filter(STATE %in% stringr::str_to_upper(input$StateSelector))
     }
     x <- get_demographic_column(dat, input$DemographicsSelector)
     y <- get_mobility_column(dat, input$MobilitySelector)
     
     p <- ggplot(dat, aes(x = x, y = y)) +
-      geom_point(aes(text = paste0(COUNTY, " County, ", STATE)), color = "aquamarine3") +
+      geom_point(alpha = .5, aes(text = paste0("<b>", COUNTY, " County, ", stringr::str_to_title(STATE), "</b>",
+                                       '<br>', '<i>Change in ', input$MobilitySelector, ' Mobility:</i> ', round(y, digits = 0), "%",
+                                       '<br><i>', input$DemographicsSelector, ':</i> ', scales::comma(x)
+                                       ),
+                     
+                     ), 
+                 color = "aquamarine3") +
       geom_smooth(method = 'lm',
                   formula = y ~ x,
                   color = "aquamarine4") +
@@ -529,7 +543,8 @@ server <- function(input, output, session) {
         "Average Change in",
         input$MobilitySelector,
         "Mobility, 3/22-3/29"
-      ))
+      )) +
+      scale_x_continuous(labels = scales::comma_format())
     ggplotly(p, tooltip = "text")
   })
   
@@ -562,10 +577,14 @@ server <- function(input, output, session) {
       ggplot(data = state_mobility, aes(x = date, y = mobility)) +
       geom_line(color = "gray",
                 alpha = 0.3,
-                group = state_mobility$STATE) +
+                group = state_mobility$STATE,
+                aes(text = paste0('<b>', stringr::str_to_title(STATE), "</b><br>", format(date, format = "%B %d"), ": ", round(mobility, 1), "%"))) +
       geom_line(data = selected_state_mobility,
                 color = "blue",
-                alpha = 1)
+                alpha = 1,
+                size = 1, 
+                group = selected_state_mobility$STATE,
+                aes(text = paste0('<b>', stringr::str_to_title(STATE), "</b><br>", format(date, format = "%B %d"), ": ", round(mobility, 1), "%")))
     
     if ("State of Emergency" %in% input$selected_policies) {
       p <-
@@ -613,11 +632,12 @@ server <- function(input, output, session) {
       scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
       labs(x = "Date", y = "% Mobility Above Baseline") +
       theme(legend.position = "bottom")
-    ggplotly(p)
+    
+    ggplotly(p, tooltip = "text")
   })
   
   output$case_mobility <- renderPlotly({
-    selected <- case_mobility[which(case_mobility$STATE == input$CaseStateSelector), ]
+    selected <- case_mobility[which(case_mobility$STATE == stringr::str_to_upper(input$CaseStateSelector)), ]
     
     coeff = 1/((max(selected$cases)-min(selected$cases))/(max(selected$mobility)-min(selected$mobility)))
     
@@ -634,6 +654,10 @@ server <- function(input, output, session) {
         # Add a second axis and specify its features
         sec.axis = sec_axis(~.*coeff, name="Mobility", breaks = seq(-50,50,10))
       ) +
+      
+      labs(
+        x = "Date"
+      )
       
       theme(
         axis.title.y = element_text(color = 'slateblue2', size=13),
@@ -652,13 +676,13 @@ server <- function(input, output, session) {
     selected_stay_at_home <- selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
     selected_closed_business <- selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
     
-    print(selected_state_of_emergency)
-    print(selected_stay_at_home)
-    print(selected_closed_business)
+    # print(selected_state_of_emergency)
+    # print(selected_stay_at_home)
+    # print(selected_closed_business)
     
     p <- ggplot(data=state_cases, aes(x = date, y = cases)) +
       geom_line(data = selected_state_cases, color="blue", stat="identity") + 
-      geom_point(data = selected_state_cases, color="blue", stat="identity") +    
+      geom_point(data = selected_state_cases, size = 1, color="blue", stat="identity") +    
       geom_vline(aes(xintercept=as.numeric(selected_state_of_emergency), color = "State of Emergency"), alpha=0.75, show.legend=T) + 
       geom_vline(aes(xintercept=as.numeric(selected_stay_at_home), color = "Stay at Home"), alpha=0.5, show.legend=T) +
       geom_vline(aes(xintercept=as.numeric(selected_closed_business), color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T) +
@@ -666,8 +690,10 @@ server <- function(input, output, session) {
       scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
       labs(x = "Date", y = "Cases") +
       theme(legend.position="bottom")
+    
     ggplotly(p)
   })
 }
 
 shinyApp(ui, server)
+
