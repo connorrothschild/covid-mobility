@@ -12,7 +12,9 @@ dimensions.boundedWidth = dimensions.width - dimensions.margin.left - dimensions
 dimensions.boundedHeight = dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
 
 d3
-	.csv('https://raw.githubusercontent.com/connorrothschild/covid-mobility/viz/data/mobility/county/county-names.csv')
+	.csv(
+		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/viz/data/mobility/county/county-names.csv'
+	)
 	.row(function(d) {
 		return d.county_state;
 	})
@@ -91,7 +93,7 @@ d3.csv(
 			return d.Region == selected_county && d.State == selected_state && d.Category == selected_category;
 		});
 
-		console.table(data);
+		// console.table(data);
 
 		const xAccessor = (d) => new Date(d.date);
 		const yAccessor = (d) => d.value;
@@ -220,7 +222,7 @@ d3.csv(
 				// Get the id of the button
 				var buttonId = button.attr('id');
 
-				console.log(buttonId);
+				// console.log(buttonId);
 				// Toggle the bubble chart based on
 				// the currently clicked button.
 				// update(current)
@@ -296,7 +298,7 @@ d3.csv(
 			// 	return d.Category == selected_category;
 			// });
 
-			console.table(data);
+			// console.table(data);
 
 			const yAccessor2 = (d) => d.value;
 
@@ -377,7 +379,7 @@ d3.csv(
 				return d.Region == selected_county && d.State == selected_state && d.Category == selected_category;
 			});
 
-			console.table(data);
+			// console.table(data);
 
 			const yAccessor2 = (d) => d.value;
 
