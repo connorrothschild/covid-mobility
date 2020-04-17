@@ -5,8 +5,8 @@ account: kyranadams
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2133600
-bundleId: 3025326
+bundleId: 3028957
 url: https://kyranadams.shinyapps.io/covid-mobility/
-when: 1587096806.15594
+when: 1587156926.40656
 asMultiple: FALSE
 asStatic: FALSE
