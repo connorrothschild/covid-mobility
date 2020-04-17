@@ -47,8 +47,8 @@ names(ACS_social)[1] <- "FIPS2"
 ACS_econ$FIPS1 = substr(ACS_econ$FIPS, 10, 14)
 ACS_social$FIPS2 = substr(ACS_social$FIPS, 10, 14)
 
-ACS_econ <- ACS_econ[-1,]
-ACS_social <- ACS_social[-1,]
+ACS_econ <- ACS_econ[-1, ]
+ACS_social <- ACS_social[-1, ]
 
 ACS_social_sub <-
   ACS_social[, c(
@@ -222,7 +222,7 @@ full_dat$net_mob <-
   ) / 8
 
 # Remove bad data
-full_dat <- full_dat[full_dat$EP_POV > 0, ]
+full_dat <- full_dat[full_dat$EP_POV > 0,]
 
 
 # Demographic columns to plot
@@ -395,202 +395,200 @@ ui <- fluidPage(
       )),
       hr(),
       fluidRow(withSpinner(
-        plotlyOutput(outputId = "policy_mobility"
-                     # brush = "brush_SchoolComp"))
-        ))
-      ),
-      tabPanel(
-        "See the map",
-        fluid = TRUE,
-        icon = icon("globe-americas"),
-        # titlePanel("How does your county compare?"),
-        fluidRow(
-          tags$iframe(
-            seamless = "seamless",
-            src = "https://connorrothschild.github.io/covid-mobility/viz/",
-            height = 800,
-            width = 1400
-          )
+        plotlyOutput(outputId = "policy_mobility")
+      ))
+    ),
+    tabPanel(
+      "See the map",
+      fluid = TRUE,
+      icon = icon("globe-americas"),
+      # titlePanel("How does your county compare?"),
+      fluidRow(
+        tags$iframe(
+          seamless = "seamless",
+          src = "https://connorrothschild.github.io/covid-mobility/viz/",
+          height = 800,
+          width = 1400
         )
-      ),
-      tabPanel(
-        "How does your county compare?",
-        fluid = TRUE,
-        icon = icon("map"),
-        # titlePanel("How does your county compare?"),
-        fluidRow(
-          tags$iframe(
-            seamless = "seamless",
-            src = "https://connorrothschild.github.io/covid-mobility/viz/line-chart",
-            height = 800,
-            width = 1400
-          )
+      )
+    ),
+    tabPanel(
+      "How does your county compare?",
+      fluid = TRUE,
+      icon = icon("map"),
+      # titlePanel("How does your county compare?"),
+      fluidRow(
+        tags$iframe(
+          seamless = "seamless",
+          src = "https://connorrothschild.github.io/covid-mobility/viz/line-chart",
+          height = 800,
+          width = 1400
         )
       )
     )
   )
+)
+
+
+###### SHINY DASHBOARD INTERACTION
+server <- function(input, output, session) {
+  set.seed(122)
   
-  
-  ###### SHINY DASHBOARD INTERACTION
-  server <- function(input, output, session) {
-    set.seed(122)
-    
-    get_demographic_column <- function(full_dat, name) {
-      if (name == "Median Household Income ($)") {
-        x <- as.numeric(full_dat$DP03_0062E)
-      } else if (name == "Mean Commute Time (min)") {
-        x <- as.numeric(full_dat$DP03_0025E)
-      } else if (name == "% Service Jobs") {
-        x <- as.numeric(full_dat$DP03_0028PE)
-      } else if (name == "% Sales/Office Jobs") {
-        x <- as.numeric(full_dat$DP03_0029PE)
-      } else if (name == "% Production/Transport Jobs") {
-        x <- as.numeric(full_dat$DP03_0031PE)
-      } else if (name == "% Below Poverty") {
-        x <- as.numeric(full_dat$EP_POV)
-      } else if (name == "% Asian") {
-        x <- as.numeric(full_dat$DP05_0044PE)
-      } else if (name == "% White") {
-        x <- as.numeric(full_dat$DP05_0037PE)
-      } else if (name == "% African-American") {
-        x <- as.numeric(full_dat$DP05_0038PE)
-      } else if (name == "% Hispanic/Latino") {
-        x <- as.numeric(full_dat$DP05_0071PE)
-      } else if (name == "% Minority") {
-        x <- as.numeric(full_dat$EP_MINRTY)
-      }
-      
-      return(x)
-    }
-    get_mobility_column <- function(full_dat, name) {
-      if (name == "Aggregate") {
-        y <- full_dat$net_mob
-      } else if (name == "Workplace") {
-        y <- full_dat$net_work_mob
-      } else if (name == "Residential") {
-        y <- full_dat$net_res_mob
-      } else if (name == "Retail & recreation") {
-        y <- full_dat$net_retail_mob
-      } else if (name == "Grocery & pharmacy") {
-        y <- full_dat$net_grocery_mob
-      } else if (name == "Transit stations") {
-        y <- full_dat$net_transit_mob
-      } else if (name == "Parks") {
-        y <- full_dat$net_parks_mob
-      }
-      
-      return(y)
+  get_demographic_column <- function(full_dat, name) {
+    if (name == "Median Household Income ($)") {
+      x <- as.numeric(full_dat$DP03_0062E)
+    } else if (name == "Mean Commute Time (min)") {
+      x <- as.numeric(full_dat$DP03_0025E)
+    } else if (name == "% Service Jobs") {
+      x <- as.numeric(full_dat$DP03_0028PE)
+    } else if (name == "% Sales/Office Jobs") {
+      x <- as.numeric(full_dat$DP03_0029PE)
+    } else if (name == "% Production/Transport Jobs") {
+      x <- as.numeric(full_dat$DP03_0031PE)
+    } else if (name == "% Below Poverty") {
+      x <- as.numeric(full_dat$EP_POV)
+    } else if (name == "% Asian") {
+      x <- as.numeric(full_dat$DP05_0044PE)
+    } else if (name == "% White") {
+      x <- as.numeric(full_dat$DP05_0037PE)
+    } else if (name == "% African-American") {
+      x <- as.numeric(full_dat$DP05_0038PE)
+    } else if (name == "% Hispanic/Latino") {
+      x <- as.numeric(full_dat$DP05_0071PE)
+    } else if (name == "% Minority") {
+      x <- as.numeric(full_dat$EP_MINRTY)
     }
     
+    return(x)
+  }
+  get_mobility_column <- function(full_dat, name) {
+    if (name == "Aggregate") {
+      y <- full_dat$net_mob
+    } else if (name == "Workplace") {
+      y <- full_dat$net_work_mob
+    } else if (name == "Residential") {
+      y <- full_dat$net_res_mob
+    } else if (name == "Retail & recreation") {
+      y <- full_dat$net_retail_mob
+    } else if (name == "Grocery & pharmacy") {
+      y <- full_dat$net_grocery_mob
+    } else if (name == "Transit stations") {
+      y <- full_dat$net_transit_mob
+    } else if (name == "Parks") {
+      y <- full_dat$net_parks_mob
+    }
     
-    output$demo_scatter <- renderPlotly({
-      options(scipen = 999)
-      
-      dat <- full_dat
-      if (!is.null(input$StateSelector)) {
-        dat <- full_dat %>%
-          filter(STATE %in% input$StateSelector)
-      }
-      x <- get_demographic_column(dat, input$DemographicsSelector)
-      y <- get_mobility_column(dat, input$MobilitySelector)
-      
-      p <- ggplot(dat, aes(x = x, y = y)) +
-        geom_point(aes(text = paste0(COUNTY, " County, ", STATE)), color = "aquamarine3") +
-        geom_smooth(method = 'lm',
-                    formula = y ~ x,
-                    color = "aquamarine4") +
-        xlab(input$DemographicsSelector) +
-        ylab(paste(
-          "Average Change in",
-          input$MobilitySelector,
-          "Mobility, 3/22-3/29"
-        ))
-      ggplotly(p, tooltip = "text")
-    })
-    
-    output$demo_correlation_table <- DT::renderDataTable({
-      x <- get_demographic_column(full_dat, input$DemographicsSelector)
-      y <- get_mobility_column(full_dat, input$MobilitySelector)
-      
-      test <- cor.test(x, y)
-      
-      cor_tab <- cbind(c(test$estimate), c(test$p.value))
-      rownames(cor_tab) <- c(input$DemographicsSelector)
-      colnames(cor_tab) <- c("Pearson's r", "p-value")
-      
-      DT::datatable(cor_tab, options = list(dom = 't'))
-    })
-    output$policy_mobility <- renderPlotly({
-      selected_state_mobility <-
-        state_mobility[which(toupper(state_mobility$STATE) == toupper(input$state_selected)), ]
-      selected_state_policies <-
-        state_policies[which(toupper(state_policies$STATE) == toupper(input$state_selected)), ]
-      
-      selected_state_of_emergency <-
-        selected_state_policies[1, "STATE.OF.EMERGENCY"]
-      selected_stay_at_home <-
-        selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
-      selected_closed_business <-
-        selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
-      
-      p <-
-        ggplot(data = state_mobility, aes(x = date, y = mobility)) +
-        geom_line(color = "gray",
-                  alpha = 0.3,
-                  group = state_mobility$STATE) +
-        geom_line(data = selected_state_mobility,
-                  color = "blue",
-                  alpha = 1)
-      
-      if ("State of Emergency" %in% input$selected_policies) {
-        p <-
-          p + geom_vline(
-            aes(
-              xintercept = as.numeric(selected_state_of_emergency),
-              color = "State of Emergency"
-            ),
-            alpha = 0.5,
-            show.legend = T
-          )
-      }
-      if ("Stay at Home" %in% input$selected_policies) {
-        p <-
-          p + geom_vline(
-            aes(
-              xintercept = as.numeric(selected_stay_at_home),
-              color = "Stay at Home"
-            ),
-            alpha = 0.5,
-            show.legend = T
-          )
-      }
-      if ("Closed Non-essential Businesses" %in% input$selected_policies) {
-        p <-
-          p + geom_vline(
-            aes(
-              xintercept = as.numeric(selected_closed_business),
-              color = "Closed Non-essential Businesses"
-            ),
-            alpha = 0.5,
-            show.legend = T
-          )
-      }
-      
-      p <- p +
-        scale_color_manual(
-          name = "Policies",
-          values = c(
-            "Stay at Home" = "red",
-            "State of Emergency" = "green",
-            "Closed Non-essential Businesses" = "cyan"
-          )
-        ) +
-        scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
-        labs(x = "Date", y = "% Mobility Above Baseline") +
-        theme(legend.position = "bottom")
-      ggplotly(p)
-    })
-    
+    return(y)
   }
   
-  shinyApp(ui, server)
+  
+  output$demo_scatter <- renderPlotly({
+    options(scipen = 999)
+    
+    dat <- full_dat
+    if (!is.null(input$StateSelector)) {
+      dat <- full_dat %>%
+        filter(STATE %in% input$StateSelector)
+    }
+    x <- get_demographic_column(dat, input$DemographicsSelector)
+    y <- get_mobility_column(dat, input$MobilitySelector)
+    
+    p <- ggplot(dat, aes(x = x, y = y)) +
+      geom_point(aes(text = paste0(COUNTY, " County, ", STATE)), color = "aquamarine3") +
+      geom_smooth(method = 'lm',
+                  formula = y ~ x,
+                  color = "aquamarine4") +
+      xlab(input$DemographicsSelector) +
+      ylab(paste(
+        "Average Change in",
+        input$MobilitySelector,
+        "Mobility, 3/22-3/29"
+      ))
+    ggplotly(p, tooltip = "text")
+  })
+  
+  output$demo_correlation_table <- DT::renderDataTable({
+    x <- get_demographic_column(full_dat, input$DemographicsSelector)
+    y <- get_mobility_column(full_dat, input$MobilitySelector)
+    
+    test <- cor.test(x, y)
+    
+    cor_tab <- cbind(c(test$estimate), c(test$p.value))
+    rownames(cor_tab) <- c(input$DemographicsSelector)
+    colnames(cor_tab) <- c("Pearson's r", "p-value")
+    
+    DT::datatable(cor_tab, options = list(dom = 't'))
+  })
+  output$policy_mobility <- renderPlotly({
+    selected_state_mobility <-
+      state_mobility[which(toupper(state_mobility$STATE) == toupper(input$state_selected)),]
+    selected_state_policies <-
+      state_policies[which(toupper(state_policies$STATE) == toupper(input$state_selected)),]
+    
+    selected_state_of_emergency <-
+      selected_state_policies[1, "STATE.OF.EMERGENCY"]
+    selected_stay_at_home <-
+      selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
+    selected_closed_business <-
+      selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
+    
+    p <-
+      ggplot(data = state_mobility, aes(x = date, y = mobility)) +
+      geom_line(color = "gray",
+                alpha = 0.3,
+                group = state_mobility$STATE) +
+      geom_line(data = selected_state_mobility,
+                color = "blue",
+                alpha = 1)
+    
+    if ("State of Emergency" %in% input$selected_policies) {
+      p <-
+        p + geom_vline(
+          aes(
+            xintercept = as.numeric(selected_state_of_emergency),
+            color = "State of Emergency"
+          ),
+          alpha = 0.5,
+          show.legend = T
+        )
+    }
+    if ("Stay at Home" %in% input$selected_policies) {
+      p <-
+        p + geom_vline(
+          aes(
+            xintercept = as.numeric(selected_stay_at_home),
+            color = "Stay at Home"
+          ),
+          alpha = 0.5,
+          show.legend = T
+        )
+    }
+    if ("Closed Non-essential Businesses" %in% input$selected_policies) {
+      p <-
+        p + geom_vline(
+          aes(
+            xintercept = as.numeric(selected_closed_business),
+            color = "Closed Non-essential Businesses"
+          ),
+          alpha = 0.5,
+          show.legend = T
+        )
+    }
+    
+    p <- p +
+      scale_color_manual(
+        name = "Policies",
+        values = c(
+          "Stay at Home" = "red",
+          "State of Emergency" = "green",
+          "Closed Non-essential Businesses" = "cyan"
+        )
+      ) +
+      scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
+      labs(x = "Date", y = "% Mobility Above Baseline") +
+      theme(legend.position = "bottom")
+    ggplotly(p)
+  })
+}
+
+shinyApp(ui, server)
