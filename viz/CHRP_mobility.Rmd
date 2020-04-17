@@ -32,8 +32,8 @@ thm <-
 
 
 # load ACS data
-ACS_econ <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/covid-mobility/data/demographics/ACS_ECONOMIC_2018.csv",stringsAsFactors=FALSE)
-ACS_social <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/covid-mobility/data/demographics/ACS_SOCIAL_2018.csv",stringsAsFactors=FALSE)
+ACS_econ <- read.csv("../data/demographics/ACS_ECONOMIC_2018.csv",stringsAsFactors=FALSE)
+ACS_social <- read.csv("../data/demographics/ACS_SOCIAL_2018.csv",stringsAsFactors=FALSE)
 
 # rename GEO_ID to FIPS
 names(ACS_econ)[1] <- "FIPS1"
@@ -46,18 +46,18 @@ ACS_social$FIPS2 = substr(ACS_social$FIPS, 10, 14)
 ACS_econ <- ACS_econ[-1,]
 ACS_social <- ACS_social[-1,]
 
-county_cases <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/covid-mobility/data/cases/us-counties-cases.csv")
-state_cases <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/covid-mobility/data/cases/us-states-cases.csv")
+county_cases <- read.csv("../data/cases/us-counties-cases.csv")
+state_cases <- read.csv("../data/cases/us-states-cases.csv")
 state_cases$date <- as.Date(state_cases$date)
 state_cases$state <- toupper(state_cases$state)
 names(state_cases)[2] <- toupper(names(state_cases)[2])
 state_cases <- state_cases[order(state_cases$STATE, state_cases$date), ]
 
 # laod SVI CDC data
-SVI_dat <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/covid-mobility/data/demographics/SVI2018_US_COUNTY.csv")
+SVI_dat <- read.csv("../data/demographics/SVI2018_US_COUNTY.csv")
 
 # load mobility data
-mobility <- read.csv("/Users/rebeccafrancis23/Documents/CHRP/covid-mobility/data/mobility/county/county-data-wide-cleaned.csv")
+mobility <- read.csv("../data/mobility/county/county-data-wide-cleaned.csv")
 mobility <- na.omit(mobility)
 
 mobility$net_mob <- (mobility$X2020.03.22 + mobility$X2020.03.23 + mobility$X2020.03.24 + mobility$X2020.03.25 + mobility$X2020.03.26 + mobility$X2020.03.27 + mobility$X2020.03.28 + mobility$X2020.03.29)/8
