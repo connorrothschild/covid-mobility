@@ -1,7 +1,5 @@
 ## app.R ##
 library(shinydashboard)
-## THIS FILE IS RUN BEFORE THE SHINY DASHBOARD STARTS
-
 library(highcharter)
 library(flexdashboard)
 library(ggplot2)
@@ -33,10 +31,10 @@ thm <-
 
 # load ACS data
 ACS_econ <-
-  read.csv("../data/demographics/ACS_ECONOMIC_2018.csv",
+  read.csv("data/demographics/ACS_ECONOMIC_2018.csv",
            stringsAsFactors = FALSE)
 ACS_social <-
-  read.csv("../data/demographics/ACS_SOCIAL_2018.csv",
+  read.csv("data/demographics/ACS_SOCIAL_2018.csv",
            stringsAsFactors = FALSE)
 
 # rename GEO_ID to FIPS
@@ -86,7 +84,7 @@ ACS_econ_sub <- na.omit(ACS_econ_sub)
 
 
 # laod SVI CDC data
-SVI_dat <- read.csv("../data/demographics/SVI2018_US_COUNTY.csv")
+SVI_dat <- read.csv("data/demographics/SVI2018_US_COUNTY.csv")
 
 # select relevant columns from SVI data
 SVI_sub <-
@@ -107,7 +105,7 @@ SVI_sub <-
 
 # load mobility data
 mobility <-
-  read.csv("../data/archived/county-data-wide-cleaned.csv")
+  read.csv("data/archived/county-data-wide-cleaned.csv")
 mobility <- na.omit(mobility)
 
 mobility$net_mob <-
@@ -272,7 +270,7 @@ state_mobility$date <-
 ######## STATE POLICY DATA
 
 state_policies <-
-  read.csv("../data/policies/covid_us_state_policies.csv")
+  read.csv("data/policies/covid_us_state_policies.csv")
 colnames(state_policies) <- toupper(colnames(state_policies))
 state_policies$STATE <- toupper(state_policies$STATE)
 state_policies$STATE.OF.EMERGENCY <-
@@ -286,8 +284,8 @@ state_policies[state_policies == 0] <- NA
 ALL_STATES <- unique(state_mobility$STATE)
 
 ####### CASES + MOBILITY
-county_cases <- read.csv("../data/cases/us-counties-cases.csv")
-state_cases <- read.csv("../data/cases/us-states-cases.csv")
+county_cases <- read.csv("data/cases/us-counties-cases.csv")
+state_cases <- read.csv("data/cases/us-states-cases.csv")
 state_cases$date <- as.Date(state_cases$date)
 state_cases$state <- toupper(state_cases$state)
 names(state_cases)[2] <- toupper(names(state_cases)[2])
