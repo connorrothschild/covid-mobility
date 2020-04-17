@@ -22,7 +22,7 @@ tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacit
 queue()
 	.defer(
 		d3.csv,
-		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/data/archived/county-data-long-cleaned-averages.csv'
+		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/viz/data/archived/county-data-long-cleaned-averages.csv'
 	)
 	.defer(d3.json, 'us.json')
 	.await(ready);

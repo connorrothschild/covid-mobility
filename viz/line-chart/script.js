@@ -12,9 +12,7 @@ dimensions.boundedWidth = dimensions.width - dimensions.margin.left - dimensions
 dimensions.boundedHeight = dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
 
 d3
-	.csv(
-		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/0d778130fdd1beba1a250664948b8e93780f84dd/data/mobility/county/county-names.csv'
-	)
+	.csv('https://raw.githubusercontent.com/connorrothschild/covid-mobility/viz/data/mobility/county/county-names.csv')
 	.row(function(d) {
 		return d.county_state;
 	})
@@ -80,7 +78,7 @@ var selected_category = 'Workplace';
 
 //Read the data
 d3.csv(
-	'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/data/archived/county-data-long-cleaned.csv',
+	'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/viz/data/archived/county-data-long-cleaned.csv',
 	function(data) {
 		data.forEach(function(d) {
 			d.date = d.date;
