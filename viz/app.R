@@ -453,9 +453,6 @@ ui <- fluidPage(
         mainPanel(
           fluidRow(withSpinner(
             plotlyOutput(outputId = "case_mobility")
-          )),
-          fluidRow(withSpinner(
-            plotlyOutput(outputId = "case_policy")
           ))
         )
       )
@@ -638,6 +635,11 @@ server <- function(input, output, session) {
   
   output$case_mobility <- renderPlotly({
     selected <- case_mobility[which(case_mobility$STATE == stringr::str_to_upper(input$CaseStateSelector)), ]
+    selected_state_policies <- state_policies[which(toupper(state_policies$STATE) == toupper(input$CaseStateSelector)), ]
+    print(selected_state_policies)
+    selected_state_of_emergency <- selected_state_policies[1, "STATE.OF.EMERGENCY"]
+    selected_stay_at_home <- selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
+    selected_closed_business <- selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
     
     coeff = 1/((max(selected$cases)-min(selected$cases))/(max(selected$mobility)-min(selected$mobility)))
     
@@ -655,6 +657,10 @@ server <- function(input, output, session) {
                                    color='seagreen3') +
       geom_line(data=selected, aes(x=date, y=mobility/coeff),
                                   color='seagreen3') +
+      geom_vline(aes(xintercept=as.numeric(selected_state_of_emergency), color = "State of Emergency"), alpha=0.75, show.legend=T) + 
+      geom_vline(aes(xintercept=as.numeric(selected_stay_at_home), color = "Stay at Home"), alpha=0.5, show.legend=T) +
+      geom_vline(aes(xintercept=as.numeric(selected_closed_business), color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T) +
+      scale_color_manual(name = "Policies", values = c("Stay at Home" = "red", "State of Emergency" = "green", "Closed Non-essential Businesses" = "cyan")) +
                         
       scale_y_continuous(
         
@@ -676,35 +682,6 @@ server <- function(input, output, session) {
       
       ggtitle("Cases vs. Mobility")
     ggplotly(p, tooltip = 'text')
-  })
-  
-  output$case_policy <- renderPlotly({
-    selected_state_cases <- state_cases[which(toupper(state_cases$STATE) == toupper(input$CaseStateSelector)), ]
-    selected_state_policies <- state_policies[which(toupper(state_policies$STATE) == toupper(input$CaseStateSelector)), ]
-    print(selected_state_policies)
-    selected_state_of_emergency <- selected_state_policies[1, "STATE.OF.EMERGENCY"]
-    selected_stay_at_home <- selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
-    selected_closed_business <- selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
-    
-    # print(selected_state_of_emergency)
-    # print(selected_stay_at_home)
-    # print(selected_closed_business)
-    
-    p <- ggplot(data=state_cases, aes(x = date, y = cases)) +
-      geom_line(data = selected_state_cases, color="steelblue", stat="identity") + 
-      geom_point(data = selected_state_cases, size = 1, color="steelblue", stat="identity",
-                 aes(text = paste0('<b>', format(date, format = "%B %d"), " in ", stringr::str_to_title(STATE), '</b>',
-                               "<br><i>Cases:</i> ", scales::comma(cases, accuracy = 1)))) +       
-      geom_vline(aes(xintercept=as.numeric(selected_state_of_emergency), color = "State of Emergency"), alpha=0.75, show.legend=T) + 
-      geom_vline(aes(xintercept=as.numeric(selected_stay_at_home), color = "Stay at Home"), alpha=0.5, show.legend=T) +
-      geom_vline(aes(xintercept=as.numeric(selected_closed_business), color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T) +
-      scale_color_manual(name = "Policies", values = c("Stay at Home" = "red", "State of Emergency" = "green", "Closed Non-essential Businesses" = "cyan")) +
-      scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
-      labs(x = "Date", y = "Cases") +
-      theme(legend.position="bottom")
-    
-    ggplotly(p, tooltip = "text") %>% 
-      layout(legend = list(orientation = "h", x = -0.05, y = -0.2))
   })
 }
 
