@@ -286,21 +286,21 @@ state_policies[state_policies == 0] <- NA
 ALL_STATES <- unique(state_mobility$STATE)
 
 ####### CASES + MOBILITY
-# county_cases <- read.csv("../data/cases/us-counties-cases.csv")
-# state_cases <- read.csv("../data/cases/us-states-cases.csv")
-# state_cases$date <- as.Date(state_cases$date)
-# state_cases$state <- toupper(state_cases$state)
-# names(state_cases)[2] <- toupper(names(state_cases)[2])
-# state_cases <- state_cases[order(state_cases$STATE, state_cases$date), ]
-#
-# state_cases$date <- as.character(state_cases$date)
-# state_mobility$date <- as.character(state_mobility$date)
-#
-# case_mobility <- merge(state_cases, state_mobility, by=c('date','STATE'))
-# case_mobility$date <- as.Date(case_mobility$date)
-# case_mobility <- case_mobility[order(case_mobility$STATE, case_mobility$date), ]
-# state_cases$date <- as.Date(state_cases$date)
-# state_mobility$date <- as.Date(state_mobility$date)
+county_cases <- read.csv("../data/cases/us-counties-cases.csv")
+state_cases <- read.csv("../data/cases/us-states-cases.csv")
+state_cases$date <- as.Date(state_cases$date)
+state_cases$state <- toupper(state_cases$state)
+names(state_cases)[2] <- toupper(names(state_cases)[2])
+state_cases <- state_cases[order(state_cases$STATE, state_cases$date), ]
+
+state_cases$date <- as.character(state_cases$date)
+state_mobility$date <- as.character(state_mobility$date)
+
+case_mobility <- merge(state_cases, state_mobility, by=c('date','STATE'))
+case_mobility$date <- as.Date(case_mobility$date)
+case_mobility <- case_mobility[order(case_mobility$STATE, case_mobility$date), ]
+state_cases$date <- as.Date(state_cases$date)
+state_mobility$date <- as.Date(state_mobility$date)
 
 
 ###### SHINY DASHBOARD UI
@@ -423,6 +423,34 @@ ui <- fluidPage(
           src = "https://connorrothschild.github.io/covid-mobility/viz/line-chart",
           height = 800,
           width = 1400
+        )
+      )
+    ),
+    tabPanel(
+      "Cases and Mobility",
+      fluid = TRUE,
+      icon = icon("map"),
+      sidebarLayout(
+        sidebarPanel(
+          #titlePanel("Demographic Characteristics"),
+          #shinythemes::themeSelector(),
+          fluidRow(
+            selectInput(
+              inputId = "CaseStateSelector",
+              label = "Select State",
+              choices = ALL_STATES,
+              selected = ALL_STATES[1],
+              width = "220px"
+            ),
+          )
+        ),
+        mainPanel(
+          fluidRow(withSpinner(
+            plotlyOutput(outputId = "case_mobility")
+          )),
+          fluidRow(withSpinner(
+            plotlyOutput(outputId = "case_policy")
+          ))
         )
       )
     )
@@ -587,6 +615,59 @@ server <- function(input, output, session) {
       scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
       labs(x = "Date", y = "% Mobility Above Baseline") +
       theme(legend.position = "bottom")
+    ggplotly(p)
+  })
+  
+  output$case_mobility <- renderPlotly({
+    selected <- case_mobility[which(case_mobility$STATE == input$CaseStateSelector), ]
+    
+    coeff = 1/((max(selected$cases)-min(selected$cases))/(max(selected$mobility)-min(selected$mobility)))
+    
+    p <- ggplot(case_mobility, aes(x=date)) +
+      
+      geom_line(data=selected, aes(y=cases), color='slateblue2') +
+      geom_line(data=selected, aes(y=mobility/coeff), color='seagreen3') +
+      
+      scale_y_continuous(
+        
+        # Features of the first axis
+        name = "Cases",
+        
+        # Add a second axis and specify its features
+        sec.axis = sec_axis(~.*coeff, name="Mobility", breaks = seq(-50,50,10))
+      ) +
+      
+      theme(
+        axis.title.y = element_text(color = 'slateblue2', size=13),
+        axis.title.y.right = element_text(color = 'seagreen3', size=13)
+      ) +
+      
+      ggtitle("Cases vs. Mobility")
+    ggplotly(p)
+  })
+  
+  output$case_policy <- renderPlotly({
+    selected_state_cases <- state_cases[which(toupper(state_cases$STATE) == toupper(input$CaseStateSelector)), ]
+    selected_state_policies <- state_policies[which(toupper(state_policies$STATE) == toupper(input$CaseStateSelector)), ]
+    print(selected_state_policies)
+    selected_state_of_emergency <- selected_state_policies[1, "STATE.OF.EMERGENCY"]
+    selected_stay_at_home <- selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
+    selected_closed_business <- selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
+    
+    print(selected_state_of_emergency)
+    print(selected_stay_at_home)
+    print(selected_closed_business)
+    
+    p <- ggplot(data=state_cases, aes(x = date, y = cases)) +
+      geom_line(data = selected_state_cases, color="blue", stat="identity") + 
+      geom_point(data = selected_state_cases, color="blue", stat="identity") +    
+      geom_vline(aes(xintercept=selected_state_of_emergency, color = "State of Emergency"), alpha=0.75, show.legend=T) + 
+      geom_vline(aes(xintercept=selected_stay_at_home, color = "Stay at Home"), alpha=0.5, show.legend=T) +
+      geom_vline(aes(xintercept=selected_closed_business, color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T) +
+      scale_color_manual(name = "Policies", values = c("Stay at Home" = "red", "State of Emergency" = "green", "Closed Non-essential Businesses" = "cyan")) +
+      scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
+      labs(x = "Date", y = "Cases") +
+      theme(legend.position="bottom")
     ggplotly(p)
   })
 }
