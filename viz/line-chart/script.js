@@ -93,7 +93,7 @@ d3.csv(
 			return d.Region == selected_county && d.State == selected_state && d.Category == selected_category;
 		});
 
-		console.table(data);
+		// console.table(data);
 
 		const xAccessor = (d) => new Date(d.date);
 		const yAccessor = (d) => d.value;
@@ -222,7 +222,7 @@ d3.csv(
 				// Get the id of the button
 				var buttonId = button.attr('id');
 
-				console.log(buttonId);
+				// console.log(buttonId);
 				// Toggle the bubble chart based on
 				// the currently clicked button.
 				// update(current)
@@ -298,7 +298,7 @@ d3.csv(
 			// 	return d.Category == selected_category;
 			// });
 
-			console.table(data);
+			// console.table(data);
 
 			const yAccessor2 = (d) => d.value;
 
@@ -379,7 +379,7 @@ d3.csv(
 				return d.Region == selected_county && d.State == selected_state && d.Category == selected_category;
 			});
 
-			console.table(data);
+			// console.table(data);
 
 			const yAccessor2 = (d) => d.value;
 
