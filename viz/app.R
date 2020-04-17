@@ -16,6 +16,7 @@ library(ggrepel)
 library(shinycssloaders)
 library(shinythemes)
 library(SwimmeR)
+library(plotly)
 
 
 thm <- 
@@ -177,7 +178,7 @@ ui <- fluidPage(
                             )
                           ),
                           # hr(),
-                          withSpinner(plotOutput(outputId = "demo_scatter")),
+                          withSpinner(plotlyOutput(outputId = "demo_scatter")),
                           fluidRow(
                             column(width = 5,
                                    verbatimTextOutput("demo_hover_info")
@@ -206,7 +207,7 @@ ui <- fluidPage(
                       ),
                       hr(),
                       fluidRow(
-                               withSpinner(plotOutput(outputId = "policy_mobility" 
+                               withSpinner(plotlyOutput(outputId = "policy_mobility" 
                                                       # brush = "brush_SchoolComp"
                                ))
                         
@@ -218,7 +219,6 @@ ui <- fluidPage(
 ###### SHINY DASHBOARD INTERACTION
 server <- function(input, output) {
   set.seed(122)
-  histdata <- rnorm(500)
   
   get_demographic_column <- function(name){
     if (name == "Median Household Income ($)") {
@@ -268,17 +268,18 @@ server <- function(input, output) {
   }
 
   
-  output$demo_scatter <- renderPlot({
+  output$demo_scatter <- renderPlotly({
     x <- get_demographic_column(input$DemographicsSelector)
     y <- get_mobility_column(input$MobilitySelector)
     
     options(scipen = 999)
     
-    ggplot(full_dat, aes(x=x,y=y)) + 
+    p <- ggplot(full_dat, aes(x=x,y=y)) + 
       geom_point(color="aquamarine3") + 
       geom_smooth(method='lm',color="aquamarine4") + 
       xlab(input$DemographicsSelector) + 
       ylab(paste("Average Change in", input$MobilitySelector, "Mobility, 3/22-3/29")) 
+    ggplotly(p)
   })
   
   output$demo_correlation_table<-DT::renderDataTable({
@@ -293,7 +294,7 @@ server <- function(input, output) {
     
     DT::datatable(cor_tab, options = list(dom = 't'))
   })
-  output$policy_mobility <- renderPlot({
+  output$policy_mobility <- renderPlotly({
     selected_state_mobility <- state_mobility[which(toupper(state_mobility$STATE) == toupper(input$state_selected)), ]
     selected_state_policies <- state_policies[which(toupper(state_policies$STATE) == toupper(input$state_selected)), ]
 
@@ -310,13 +311,13 @@ server <- function(input, output) {
       geom_line(data = selected_state_mobility, color="blue", alpha=1)
 
     if ("State of Emergency" %in% input$selected_policies) {
-      p <- p + geom_vline(aes(xintercept=selected_state_of_emergency, color = "State of Emergency"), alpha=0.5, show.legend=T)
+      p <- p + geom_vline(aes(xintercept = as.numeric(selected_state_of_emergency), color = "State of Emergency"), alpha=0.5, show.legend=T)
     }
     if ("Stay at Home" %in% input$selected_policies) {
-      p <- p + geom_vline(aes(xintercept=selected_stay_at_home, color = "Stay at Home"), alpha=0.5, show.legend=T)
+      p <- p + geom_vline(aes(xintercept = as.numeric(selected_stay_at_home), color = "Stay at Home"), alpha=0.5, show.legend=T)
     }
     if ("Closed Non-essential Businesses" %in% input$selected_policies) {
-      p <- p + geom_vline(aes(xintercept=selected_closed_business, color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T)  
+      p <- p + geom_vline(aes(xintercept = as.numeric(selected_closed_business), color = "Closed Non-essential Businesses"), alpha=0.5, show.legend=T)  
     }
     
     p <- p + 
@@ -324,7 +325,7 @@ server <- function(input, output) {
       scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
       labs(x = "Date", y = "% Mobility Above Baseline") +
       theme(legend.position="bottom")
-    p
+    ggplotly(p)
   })
   
 }
