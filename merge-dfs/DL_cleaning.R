@@ -3,7 +3,7 @@ library(dplyr)
 library(tidyr)
 
 # reading mobility data (has both state and county)
-path_raw <- '../data/mobility/all-data-raw.csv'
+path_raw <- '../viz/data/mobility/all-data-raw.csv'
 mobility_raw <- read.csv(path_raw,stringsAsFactors = FALSE)
 
 # state data
@@ -12,7 +12,7 @@ mobility_state <- mobility_raw %>% filter(admin_level==1)
 mobility_state[,6:ncol(mobility_state)] <- mobility_state[
   ,6:ncol(mobility_state)] - 100
 write.csv(mobility_state,
-          '../data/mobility/state/state-data-wide.csv',
+          '../viz/data/mobility/state/state-data-wide.csv',
           row.names = FALSE)
 
 # county data
@@ -21,7 +21,7 @@ mobility_county <- mobility_raw %>% filter(admin_level==2)
 mobility_county[,6:ncol(mobility_county)] <- mobility_county[
   ,6:ncol(mobility_county)] - 100
 write.csv(mobility_county,
-          '../data/mobility/county/county-data-wide.csv',
+          '../viz/data/mobility/county/county-data-wide.csv',
           row.names = FALSE)
 
 # long data
@@ -52,5 +52,5 @@ mobility_county_long <- merge(mobility_county_long,
   select(-c(mean,sd)) %>% 
   arrange(fips,date)
 write.csv(mobility_county_long,
-          '../data/mobility/county/county-data-long.csv',
+          '../viz/data/mobility/county/county-data-long.csv',
           row.names = FALSE)

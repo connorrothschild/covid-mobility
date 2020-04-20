@@ -2,13 +2,13 @@ library(readr)
 library(dplyr)
 
 # reading ACS data
-ACS_econ <- read.csv('../data/demographics/ACS_ECONOMIC_2018.csv',
+ACS_econ <- read.csv('../viz/data/demographics/ACS_ECONOMIC_2018.csv',
                      stringsAsFactors = FALSE)
 cols_econ <- ACS_econ[1,]
 ACS_econ <- ACS_econ[-1,]
 ACS_econ$GEO_ID <- substr(ACS_econ$GEO_ID,10,14)
 
-ACS_social <- read.csv('../data/demographics/ACS_SOCIAL_2018.csv',
+ACS_social <- read.csv('../viz/data/demographics/ACS_SOCIAL_2018.csv',
                        stringsAsFactors = FALSE)
 cols_social <- ACS_social[1,]
 ACS_social <- ACS_social[-1,]
@@ -70,4 +70,4 @@ ACS_all <- merge(ACS_all_p,merge(
   ACS_social %>% select(GEO_ID,NAME,DP05_0033E),by=c('GEO_ID','NAME')),
   by=c('GEO_ID','NAME'))
 
-write.csv(ACS_all,'ACS_all.csv',row.names = FALSE)
+write.csv(ACS_all,'../viz/data/ACS_econ_social.csv',row.names = FALSE)

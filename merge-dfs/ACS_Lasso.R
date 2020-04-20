@@ -3,10 +3,11 @@ library(dplyr)
 library(glmnet)
 
 # reading ACS data
-ACS <- read.csv('../data/demographics/ACS_econ_social.csv',stringsAsFactors = FALSE)
+ACS <- read.csv('../viz/data/demographics/ACS_econ_social.csv',
+                stringsAsFactors = FALSE)
 
 # reading mobility data
-mobility <- read.csv('../data/mobility/county/pre_post_7days.csv',
+mobility <- read.csv('../viz/data/mobility/county/pre_post_7days.csv',
                      stringsAsFactors = FALSE)
 
 # only interested in post-policy data in this case
@@ -32,7 +33,7 @@ vars <- names(coefs)[coefs!=0]
 X_lasso <- as.matrix(data.frame(X) %>% select(all_of(vars)))
 # writing 66 chosen variables to csv
 write.csv(as.data.frame(cbind(merged[,c('GEO_ID','NAME')],X_lasso)),
-          '../data/demographics/ACS_lasso_big.csv',
+          '../viz/data/demographics/ACS_lasso_big.csv',
           row.names = FALSE)
 
 # PCA on chosen features to further reduce number of features
@@ -40,7 +41,7 @@ pca <- prcomp(X_lasso,center = TRUE,scale. = TRUE)
 # 17 principal components account for 71% of the variance
 ACS_lasso_pca <- cbind(merged %>% select(GEO_ID,NAME),
                        pca$x[,1:17])
-write.csv(ACS_lasso_pca,'../data/demographics/ACS_lasso_pca.csv',
+write.csv(ACS_lasso_pca,'../viz/data/demographics/ACS_lasso_pca.csv',
           row.names = FALSE)
 
 # choosing larger-than-optimal lambda to reduce number of variables to 15
@@ -51,5 +52,5 @@ vars_few <- vars_few[!vars_few %in% c('DP03_0002PE','DP03_0118PE')]
 X_lasso_small <- as.matrix(data.frame(X) %>% select(all_of(vars_few)))
 # writing 15 chosen variables to csv
 write.csv(as.data.frame(cbind(merged[,c('GEO_ID','NAME')],X_lasso_small)),
-          '../data/demographics/ACS_lasso_small.csv',
+          '../viz/data/demographics/ACS_lasso_small.csv',
           row.names = FALSE)

@@ -3,14 +3,14 @@ library(dplyr)
 library(janitor)
 
 # reading mobility data
-mobility <- read.csv('../data/mobility/county/county-data-long.csv',
+mobility <- read.csv('../viz/data/mobility/county/county-data-long.csv',
                      stringsAsFactors = FALSE)
 # converting dates to date objects
 mobility <- mobility %>% 
   mutate(date=as.Date(date))
 
 # reading ACS data
-ACS <- read.csv('../data/demographics/ACS_lasso_small.csv',
+ACS <- read.csv('../viz/data/demographics/ACS_lasso_small.csv',
                 stringsAsFactors = FALSE)
 
 # reading case data
@@ -31,7 +31,7 @@ cases <- merge(cases,cases %>% group_by(date) %>%
                by='date')
 
 # reading policy data
-policy <- read.csv('../data/policies/covid_us_state_policies.csv',
+policy <- read.csv('../viz/data/policies/covid_us_state_policies.csv',
                    stringsAsFactors = FALSE)
 policy <- policy %>% 
   janitor::clean_names()
