@@ -1,0 +1,12 @@
+name: covid-mobility
+title: covid-mobility
+username:
+account: kyranadams
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2133600
+bundleId: 3030113
+url: https://kyranadams.shinyapps.io/covid-mobility/
+when: 1587185926.91068
+asMultiple: FALSE
+asStatic: FALSE

@@ -22,7 +22,7 @@ tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacit
 queue()
 	.defer(
 		d3.csv,
-		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/data/archived/county-data-long-cleaned-averages.csv'
+		'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/viz/data/archived/county-data-long-cleaned-averages.csv'
 	)
 	.defer(d3.json, 'us.json')
 	.await(ready);
@@ -51,7 +51,7 @@ function ready(error, data, us) {
 		d.county = d.Region;
 	});
 
-	console.log(data);
+	// console.log(data);
 
 	var dataByCountyByYear = d3
 		.nest()
@@ -67,7 +67,7 @@ function ready(error, data, us) {
 		county.properties.seconds = dataByCountyByYear[+county.id];
 	});
 
-	console.log(counties);
+	// console.log(counties);
 
 	// var color = d3.scaleSequential(d3.interpolateSpectral).domain([ -50, 50 ]);
 	var color = d3.scale
@@ -127,9 +127,9 @@ function ready(error, data, us) {
 
 	function update(second) {
 		slider.property('value', second);
-		console.log(second);
+		// console.log(second);
 		d3.select('.date').text(dateFunctionNoYear(second));
-		console.log(dateFunctionNoYear(second));
+		// console.log(dateFunctionNoYear(second));
 		countyShapes.style('fill', function(d) {
 			if (d.properties.seconds !== undefined && !isNaN(d.properties.seconds[second][0].value)) {
 				return color(d.properties.seconds[second][0].value);
