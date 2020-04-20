@@ -313,18 +313,110 @@ ui <- fluidPage(
   
   #Navbar structure for UI
   navbarPage(
-    "Mobility",
+    "Mobility and Predictors of Movement During COVID-19",
     theme = shinytheme("lumen"),
     tabPanel(
-      "Effects of Demographics on Mobility",
+        "Introduction", 
+        fluid = TRUE,
+        icon = icon("hand-paper-o"),
+          fluidRow(column(width = 6,
+            h1("Mobility and Movement During COVID-19"),
+            h4("By Connor Rothschild, Kyran Adams, Rebecca Francis, and Mario Paciuc"),
+            p("The Coronavirus has changed the way we move. Public health officials and lawmakers have urged or, in some states, mandated citizens to ‘social distance,’ self-quarantine, and stay home."),
+            p("Despite the popularity of such recommendations, we know little about the effectiveness of stay-at-home orders and similar laws. Although, as of this writing,", 
+            tags$a(href = 'https://www.businessinsider.com/us-map-stay-at-home-orders-lockdowns-2020-3', target = '_blank', '95% of citizens are under stay-at-home orders'), 
+            "researchers have not yet done a rigorous analysis to explore if such orders are effective at reducing travel."),
+            p('Moreover, the effectiveness of such ordinances may be inconsistent across different communities. Many in popular media have made the claim that ',
+            tags$a(href = 'https://www.nytimes.com/2020/04/05/opinion/coronavirus-social-distancing.html', target = '_blank', 'social distancing is a privilege.'), 
+            'Stay-at-home orders may generally reduce travel, but not for individuals who are deemed essential workers or live in a food desert.'),
+            br(),
+            p('The present dashboard is a rigorous exploration of ',
+              tags$ol(
+                tags$li("How mobility and movement has changed during the era of COVID-19,"), 
+                tags$li("How effective various public policies have been at meaningfully reducing travel, and"), 
+                tags$li("What factors make a community more or less likely to abide by travel-limiting regulations.")
+              )
+              ),
+            h4('Explore each of these questions by visiting the tabs on the top of the screen (in order of appearance).'),
+            # actionButton("link_to_start_presentation", "Let's Begin!")
+          ),
+                column(width = 6,
+                       tags$div(tags$img(src = 'https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/README-files/low-qual-final-states.jpg',
+                                height = 650, width = 650), style = "display: flex; align-items: center; justify-content: center;"
+                       )
+                )
+          )
+    ),
+    
+    tabPanel(
+      # h1("See the changes in mobility over time"),
+      fluid = TRUE,
+      icon = icon("globe-americas"),
+      # titlePanel("How does your county compare?"),
+      title = "Changes in mobility",
+      fluidRow(
+        tags$iframe(
+          seamless = NA,
+          src = "https://connorrothschild.github.io/covid-mobility/viz/",
+          height = 800,
+          width = 1400
+        )
+      )
+    ),
+    
+    tabPanel(
+      "How does your county compare?",
+      fluid = TRUE,
+      icon = icon("map"),
+      # titlePanel("How does your county compare?"),
+      fluidRow(
+        tags$iframe(
+          seamless = NA,
+          src = "https://connorrothschild.github.io/covid-mobility/viz/line-chart",
+          height = 800,
+          width = 1400
+        )
+      )
+    ),
+    
+    tabPanel(
+      "Cases and Mobility",
+      fluid = TRUE,
+      icon = icon("shoe-prints"),
+      h2("We know from our research that as the number of cases increases, community members begin to travel less."),
+      h3("You can explore how this relationship has unfolded in your state here:"),
+      br(),
+      sidebarLayout(
+        sidebarPanel(
+          fluidRow(
+            selectInput(
+              inputId = "CaseStateSelector",
+              label = "Select State",
+              choices = stringr::str_to_title(levels(ALL_STATES)),
+              selected = "Texas",
+              width = "220px"
+            ),
+          )
+        ),
+        mainPanel(
+          fluidRow(withSpinner(
+            plotlyOutput(outputId = "case_mobility")
+          ))
+        )
+      )
+    ),
+    
+    tabPanel(
+      "Demographics and Mobility",
       fluid = TRUE,
       icon = icon("address-book"),
-      #tags$style(button_color_css),
+      h3("But regardless of increasing caseloads, are there certain factors which limit a population’s ability to ‘social distance’?"),
+      h4("Use this tab to explore the relationship between a host of demographic variables and changes in mobility. You can also filter your display to focus on one of six categories to see how the trends change between different domains."),
+      h4("The correlation table below the chart will allow you to determine whether the relationship you see visually is statistically significant."),
       # Sidebar layout with a input and output definitions
       sidebarLayout(
         sidebarPanel(
-          titlePanel("Demographic Characteristics"),
-          #shinythemes::themeSelector(),
+          # titlePanel("Demographic Characteristics"),
           fluidRow(
             selectInput(
               inputId = "DemographicsSelector",
@@ -378,14 +470,16 @@ ui <- fluidPage(
       "Policies and Mobility",
       fluid = TRUE,
       icon = icon("poll"),
-      titlePanel("Policies and Mobility"),
+      h2("Finally, do policies like stay-at-home orders succeed in reducing travel?"),
+      h4("We can first answer this question by visually exploring trends in mobility before and after states implemented laws such as stay-at-home orders."),
+      # titlePanel("Policies and Mobility"),
       fluidRow(column(
         6,
         selectInput(
           inputId = "state_selected",
           label = "Select State",
           choices = stringr::str_to_title(ALL_STATES),
-          selected = stringr::str_to_title(ALL_STATES)[1],
+          selected = "Texas",
           width = "220px"
         ),
         checkboxGroupInput(
@@ -405,64 +499,58 @@ ui <- fluidPage(
       ))
     ),
     tabPanel(
-      "See the map",
+      "Regression",
       fluid = TRUE,
-      icon = icon("globe-americas"),
-      # titlePanel("How does your county compare?"),
-      fluidRow(
-        tags$iframe(
-          seamless = NA,
-          src = "https://connorrothschild.github.io/covid-mobility/viz/",
-          height = 800,
-          width = 1400
-        )
-      )
-    ),
-    tabPanel(
-      "How does your county compare?",
-      fluid = TRUE,
-      icon = icon("map"),
-      # titlePanel("How does your county compare?"),
-      fluidRow(
-        tags$iframe(
-          seamless = NA,
-          src = "https://connorrothschild.github.io/covid-mobility/viz/line-chart",
-          height = 800,
-          width = 1400
-        )
-      )
-    ),
-    tabPanel(
-      "Cases and Mobility",
-      fluid = TRUE,
-      icon = icon("map"),
-      sidebarLayout(
-        sidebarPanel(
-          #titlePanel("Demographic Characteristics"),
-          #shinythemes::themeSelector(),
-          fluidRow(
-            selectInput(
-              inputId = "CaseStateSelector",
-              label = "Select State",
-              choices = stringr::str_to_title(levels(ALL_STATES)),
-              selected = stringr::str_to_title(ALL_STATES)[1],
-              width = "220px"
-            ),
+      icon = icon("bar-chart"),
+      h2("But a wide variety of factors confound the relationship between stay-at-home orders and reduced mobility."),
+      h3("By bringing in data related to case loads, demographics, and prior trends in mobility, we can develop a more informed view of this relationship."),
+      # titlePanel("Policies and Mobility"),
+      fluidRow(column(
+        6,
+        p("In order to assess the effectiveness of policy on reducing mobility, various confounding factors must be accounted for. For example, the number of cases or deaths is likely correlated with both reduced mobility and increased intervention from the government. Additionally, as shown in our prior analyses, socioeconomic factors could have an impact on people’s ability to social distance. While these analyses hinted at some relations, we also performed Lasso regression to obtain a set of thirteen county-level socioeconomic variables to include in our models. For example, these include per capita income, the proportion of the population that falls into various age groups, and the proportion of the labor force that works in production or transportation."),
+        p("Policy was represented by a binary variable indicating whether a stay-at-home order was in effect in a given day. We considered the seven days before the policy was enacted and every day after that (with data up to 4/12). Along with the socioeconomic variables and the number of cases and deaths (both at the county level and at the national level), this policy variable was included as a feature in a linear model which predicts daily mobility at the county level. Interactions between policy and each socioeconomic variable were also included as a measure of a county’s ability to social distance."),
+        p("Using a fixed effects model with the within estimator ",
+          tags$a(href = 'https://faculty.washington.edu/ezivot/econ582/fixedEffects.pdf', target = '_blank','(Fixed Effects Estimation of Panel Data)'), 
+          "the socioeconomic factors--which are constant across time--are removed, but their interaction with policy--which change over time--must be included."),
+        p("While mobility has certainly decreased following stay-at-home-orders (on average, mobility was .41 standard deviations below the mean in the seven days prior to policy and .73 standard deviations below the mean in the days since), the policy did not appear to cause this change. Instead, the model attributed the reduction in mobility mostly to the nation-wide number of coronavirus cases; seemingly, a growing fear of the virus, rather than compliance with government policy, has been the force motivating people to stay home. The process was repeated using a state-of-emergency declaration as the policy variable, yielding similar results. ")
+      ),
+        column(
+          6, tags$img(src = "https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/README-files/Regression%20table.jpg", height = 550)
           )
-        ),
-        mainPanel(
-          fluidRow(withSpinner(
-            plotlyOutput(outputId = "case_mobility")
-          ))
-        )
-      )
+    )
+    ),
+  tabPanel(
+    "Conclusion",
+    fluid = TRUE,
+    icon = icon("bar-chart"),
+    # titlePanel("Policies and Mobility"),
+    fluidRow(column(
+      6,
+      h2("Concluding thoughts"),
+      p("In approaching this project, we sought to explore broadly how COVID-19 has affected the extent to which communities are moving around the country. We did this by examining questions of how people have changed their movement, if at all; the efficacy of policies limiting travel in meaningfully reducing movement; and what predictors may determine a particular community’s likelihood to abide by mobility regulations. We found that over the course of the virus spreading, mobility has broadly declined across the United States. There is a clear inverse relationship between a community’s number of cases and their overall mobility: as cases increase, mobility generally decreases."),
+      p("In particular, we saw policies such as the enactment of “stay-at-home” orders correspond with a sharp decrease in mobility, but whether these orders are actually causing the decline in mobility is more difficult to answer. People’s perception of the threat of the virus (roughly estimated by the number of cases and deaths) is a clear confounding factor. We must also account for a county’s ability to reduce mobility. A lack of social distancing does not necessarily imply a reluctance to social distance; sometimes, it can imply an inability to social distance, caused by a variety of socioeconomic factors. In fact, preliminary models showed little causal relation between policy and change in mobility. However, these models are very basic and are not yet robust enough to draw significant conclusions from.")
+    ),
+    column(
+      6,
+      h2("Next steps"),
+      p("In particular, we saw policies such as the enactment of “stay-at-home” orders correspond with a sharp decrease in mobility, but whether these orders are actually causing the decline in mobility is more difficult to answer. People’s perception of the threat of the virus (roughly estimated by the number of cases and deaths) is a clear confounding factor. We must also account for a county’s ability to reduce mobility. A lack of social distancing does not necessarily imply a reluctance to social distance; sometimes, it can imply an inability to social distance, caused by a variety of socioeconomic factors. In fact, preliminary models showed little causal relation between policy and change in mobility. However, these models are very basic and are not yet robust enough to draw significant conclusions from. "),
+      p("However, we recognize that the research done for this competition is not complete. We suggest future research continue to explore the extent to which reduced mobility, which is purportedly evidence of “social distancing,” reliably reduces transmission rates. Future models should seek to establish this relationship to determine the exact effectiveness of these measures to reduce the disease transmission."),
+      p("For more information on our project, please visit our ",
+        tags$a(href = 'https://github.com/connorrothschild/covid-mobility', target = '_blank', 'GitHub repository.')),
+      "There, you can find our code, data, and visualizations. The README contains our week 1 update for the CHRP competition. Thank you!")
+    )
     )
   )
 )
-
-
+  
 ###### SHINY DASHBOARD INTERACTION
 server <- function(input, output, session) {
+  
+  # observeEvent(input$link_to_start_presentation, {
+  #   updateTabItems(session, "Introduction", "Effects of Demographics on Mobility")
+  #   # tags$a(href = "#tab-8413-2")
+  # })
+  
   set.seed(122)
   
   get_demographic_column <- function(full_dat, name) {
@@ -511,7 +599,6 @@ server <- function(input, output, session) {
     
     return(y)
   }
-  
   
   output$demo_scatter <- renderPlotly({
     options(scipen = 999)
@@ -681,10 +768,19 @@ server <- function(input, output, session) {
       ) +
       
       ggtitle("Cases vs. Mobility")
+    
+    ay <- list(
+      tickfont = list(size=11.7),
+      titlefont=list(size=14.6),
+      overlaying = "y",
+      nticks = 5,
+      side = "right",
+      title = "Second y axis"
+    )
+    
     ggplotly(p, tooltip = 'text') %>% 
-      layout(legend = list(orientation = "h", x = -0.05, y = -0.2))
+      layout(legend = list(orientation = "h", x = -0.05, y = -0.2)) 
   })
 }
 
 shinyApp(ui, server)
-
