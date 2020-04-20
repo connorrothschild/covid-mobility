@@ -46,6 +46,8 @@ write.csv(ACS_lasso_pca,'../data/demographics/ACS_lasso_pca.csv',
 # choosing larger-than-optimal lambda to reduce number of variables to 15
 coefs_few <- as.matrix(lasso$glmnet.fit$beta)[,which(lasso$nzero==15)]
 vars_few <- names(coefs_few)[coefs_few!=0]
+# removing columns which are (or should be) perfectly collinear
+vars_few <- vars_few[!vars_few %in% c('DP03_0002PE','DP03_0118PE')]
 X_lasso_small <- as.matrix(data.frame(X) %>% select(all_of(vars_few)))
 # writing 15 chosen variables to csv
 write.csv(as.data.frame(cbind(merged[,c('GEO_ID','NAME')],X_lasso_small)),
