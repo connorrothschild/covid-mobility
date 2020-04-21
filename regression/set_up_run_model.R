@@ -215,7 +215,7 @@ preds_df_tildes <- cbind(preds_df_merged$fips,
 colnames(preds_df_tildes) <- c('fips',colnames(tildes_weekly)[
   2:ncol(tildes_weekly)])
 
-# predictions
+# making predictions
 preds <- cbind(fips=preds_df_tildes$fips,
                pred=predict(fit_weekly,
                             newdata = preds_df_tildes %>% select(-fips)))
