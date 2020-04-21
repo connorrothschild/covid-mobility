@@ -86,6 +86,8 @@ function ready(error, data, us) {
 		.append('path')
 		.attr('class', 'county')
 		.attr('d', path)
+		.style('stroke', 'grey')
+		.style('stroke-width', 0.5)
 		.style('fill', 'grey');
 
 	svg
