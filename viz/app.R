@@ -641,8 +641,16 @@ server <- function(input, output, session) {
     y <- get_mobility_column(full_dat, input$MobilitySelector)
     
     test <- cor.test(x, y)
+
+    test$p.value.pretty = case_when(test$p.value < .0001 ~ "< .0001",
+                                    test$p.value < .001 ~ "< .001",
+                                    test$p.value < .01 ~ "< .01",
+                                    test$p.value < .05 ~ "< .05",
+                                    test$p.value < .1 ~ "< .1",
+                                    TRUE ~ as.character(round(test$p.value, 4))
+                                    )
     
-    cor_tab <- cbind(c(test$estimate), c(test$p.value))
+    cor_tab <- cbind(c(round(test$estimate, 4)), c(test$p.value.pretty))
     rownames(cor_tab) <- c(input$DemographicsSelector)
     colnames(cor_tab) <- c("Pearson's r", "p-value")
     
