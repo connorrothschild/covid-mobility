@@ -613,8 +613,12 @@ server <- function(input, output, session) {
     
     p <- ggplot(dat, aes(x = x, y = y)) +
       geom_point(alpha = .5, aes(text = paste0("<b>", COUNTY, " County, ", stringr::str_to_title(STATE), "</b>",
-                                       '<br>', '<i>Change in ', input$MobilitySelector, ' Mobility:</i> ', round(y, digits = 0), "%",
-                                       '<br><i>', input$DemographicsSelector, ':</i> ', scales::comma(x, accuracy = 1)
+                                       '<br>', '<i>Change in ', 
+                           
+                                       ifelse(input$MobilitySelector == "Aggregate", 'aggregate mobility', 'mobility related to '),
+                                       ifelse(input$MobilitySelector == "Aggregate", "", stringr::str_to_lower(input$MobilitySelector)), 
+                                              ':</i> ', round(y, digits = 0), "%",
+                                       '<br><i>', stringr::str_to_sentence(input$DemographicsSelector), ':</i> ', scales::comma(x, accuracy = 1)
                                        ),
                      
                      ), 

@@ -153,7 +153,7 @@ pred_labels <- c('stay_at_home','n_cases_county',
                    'pct_public_health_coverage','pct_health_coverage',
                    'pct_poverty','pct_hispanic_other','pct_age_10_14',
                    'pct_age_20_24','per_capita_income')
-tab_model(fit,pred.labels = pred_labels,show.ci = FALSE,
+sjPlot::tab_model(fit,pred.labels = pred_labels,show.ci = FALSE,
           show.ci50 = FALSE,digits = 6,show.intercept = FALSE)
 
 # same as other function but with weekly rather than daily data
