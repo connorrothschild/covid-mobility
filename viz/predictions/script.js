@@ -1,6 +1,7 @@
 function renderRegular() {
 	d3.selectAll('svg').remove();
 	d3.select('.d3-tip').remove();
+	d3.select('.withWithout').text('with');
 
 	var width = 960,
 		height = 500,
@@ -195,7 +196,7 @@ function renderRegular() {
 function renderPrediction() {
 	d3.selectAll('svg').remove();
 	d3.select('.d3-tip').remove();
-	d3.select('#slider').remove();
+	d3.select('.withWithout').text('without');
 
 	var second = 1;
 
