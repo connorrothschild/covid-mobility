@@ -156,22 +156,41 @@ function renderRegular() {
 
 		countyShapes
 			.on('mouseover', function(d) {
-				tooltip.transition().duration(250).style('opacity', 1);
-				tooltip
-					.html(
-						'<p><strong>' +
-							d.properties.seconds[second][0].county +
-							'</strong>, ' +
-							d.properties.seconds[second][0].State +
-							'</strong></p>' +
-							'<tr><td>Change in mobility on March 28' +
-							// dateFunctionNoYear(d.properties.seconds[second][0].seconds) +
-							': </td><td><b>' +
-							formatPercent(d.properties.seconds[second][0].value / 100) +
-							'</b></td></tr>'
-					)
-					.style('left', d3.event.pageX + 15 + 'px')
-					.style('top', d3.event.pageY - 28 + 'px');
+				if (!isNaN(d.properties.seconds[second][0].value)) {
+					tooltip.transition().duration(250).style('opacity', 1);
+					tooltip
+						.html(
+							'<p><strong>' +
+								d.properties.seconds[second][0].county +
+								'</strong>, ' +
+								d.properties.seconds[second][0].State +
+								'</strong></p>' +
+								'<tr><td>Change in mobility on March 28' +
+								// dateFunctionNoYear(d.properties.seconds[second][0].seconds) +
+								': </td><td><b>' +
+								formatPercent(d.properties.seconds[second][0].value / 100) +
+								'</b></td></tr>'
+						)
+						.style('left', d3.event.pageX + 15 + 'px')
+						.style('top', d3.event.pageY - 28 + 'px');
+				} else {
+					tooltip.transition().duration(250).style('opacity', 1);
+					tooltip
+						.html(
+							'<p><strong>' +
+								d.properties.seconds[second][0].county +
+								'</strong>, ' +
+								d.properties.seconds[second][0].State +
+								'</strong></p>' +
+								'<tr><td>Change in mobility on March 28' +
+								// dateFunctionNoYear(d.properties.seconds[second][0].seconds) +
+								': </td><td><b>' +
+								'No available data' +
+								'</b></td></tr>'
+						)
+						.style('left', d3.event.pageX + 15 + 'px')
+						.style('top', d3.event.pageY - 28 + 'px');
+				}
 			})
 			.on('mouseout', function(d) {
 				tooltip.transition().duration(250).style('opacity', 0);
@@ -340,22 +359,41 @@ function renderPrediction() {
 
 		countyShapes
 			.on('mouseover', function(d) {
-				tooltip.transition().duration(250).style('opacity', 1);
-				tooltip
-					.html(
-						'<p><strong>' +
-							d.properties.seconds[second][0].county +
-							'</strong>, ' +
-							d.properties.seconds[second][0].State +
-							'</strong></p>' +
-							'<tr><td>Mobility if stay-at-home order is lifted: ' +
-							// dateFunctionNoYear(d.properties.seconds[second][0].seconds) +
-							'</td><td><b>' +
-							formatPercent(d.properties.seconds[second][0].value / 100) +
-							'</b></td></tr>'
-					)
-					.style('left', d3.event.pageX + 15 + 'px')
-					.style('top', d3.event.pageY - 28 + 'px');
+				if (!isNaN(d.properties.seconds[second][0].value)) {
+					tooltip.transition().duration(250).style('opacity', 1);
+					tooltip
+						.html(
+							'<p><strong>' +
+								d.properties.seconds[second][0].county +
+								'</strong>, ' +
+								d.properties.seconds[second][0].State +
+								'</strong></p>' +
+								'<tr><td>Mobility if stay-at-home order is lifted: ' +
+								// dateFunctionNoYear(d.properties.seconds[second][0].seconds) +
+								'</td><td><b>' +
+								formatPercent(d.properties.seconds[second][0].value / 100) +
+								'</b></td></tr>'
+						)
+						.style('left', d3.event.pageX + 15 + 'px')
+						.style('top', d3.event.pageY - 28 + 'px');
+				} else {
+					tooltip.transition().duration(250).style('opacity', 1);
+					tooltip
+						.html(
+							'<p><strong>' +
+								d.properties.seconds[second][0].county +
+								'</strong>, ' +
+								d.properties.seconds[second][0].State +
+								'</strong></p>' +
+								'<tr><td>Mobility if stay-at-home order is lifted: ' +
+								// dateFunctionNoYear(d.properties.seconds[second][0].seconds) +
+								'</td><td><b>' +
+								'No available data' +
+								'</b></td></tr>'
+						)
+						.style('left', d3.event.pageX + 15 + 'px')
+						.style('top', d3.event.pageY - 28 + 'px');
+				}
 			})
 			.on('mouseout', function(d) {
 				tooltip.transition().duration(250).style('opacity', 0);

@@ -33,6 +33,7 @@ html {
 	color: #ffffff;
 	background-color: darkred;
 }
+
 @media all and (max-width: 30em) {
 	 .button1 {
 		display: block;
@@ -56,9 +57,11 @@ html {
 	width: 960px; */
 }
 
-h1 {
+h1,
+h2,
+h3 {
 	line-height: 1em;
-	font-size: 1.75em;
+	/* font-size: 1.75em; */
 	color: #000;
 	/* font-family: adobe-caslon-pro, serif; */
 	font-weight: 400;
