@@ -171,6 +171,8 @@ function ready(error, data, us) {
 
 function update() {
 	d3.select('.withWithout').text('without');
+	d3.select('#regular').attr('class', 'button1 inactive');
+	d3.select('#prediction').attr('class', 'button1 active');
 
 	dataNew = csv.filter(function(d) {
 		return d.with_without == 'without';
@@ -226,6 +228,9 @@ function update() {
 
 function redo() {
 	d3.select('.withWithout').text('with');
+	d3.select('#regular').attr('class', 'button1 active');
+	d3.select('#prediction').attr('class', 'button1 inactive');
+
 	dataOld = csv.filter(function(d) {
 		return d.with_without == 'with';
 	});
