@@ -531,15 +531,18 @@ ui <- fluidPage(
       # titlePanel("Policies and Mobility"),
       fluidRow(column(
         6,
-        p("In order to assess the effectiveness of policy on reducing mobility, various confounding factors must be accounted for. For example, the number of cases or deaths is likely correlated with both reduced mobility and increased intervention from the government. Additionally, as shown in our prior analyses, socioeconomic factors could have an impact on people’s ability to social distance. While these analyses hinted at some relations, we also performed Lasso regression to obtain a set of thirteen county-level socioeconomic variables to include in our models. For example, these include per capita income, the proportion of the population that falls into various age groups, and the proportion of the labor force that works in production or transportation."),
-        p("Policy was represented by a binary variable indicating whether a stay-at-home order was in effect in a given day. We considered the seven days before the policy was enacted and every day after that (with data up to 4/12). Along with the socioeconomic variables and the number of cases and deaths (both at the county level and at the national level), this policy variable was included as a feature in a linear model which predicts daily mobility at the county level. Interactions between policy and each socioeconomic variable were also included as a measure of a county’s ability to social distance."),
+        p("We use a fixed effects model to determine a county’s weekly mobility from its policy, its socioeconomic characteristics, and the prevalence of the virus (measured by the log number of cases and deaths). As our explanatory analysis showed strong relations between a county’s socioeconomic characteristics and its ability to abide by regulations, interaction terms between these variables and policy are included as well."),
+        # p("The socioeconomic variables are selected from Lasso regression. These include factors such as per capita income and the proportion of the population which falls into different age groups."),
+        # p("The prevalence of the virus is measured by the logarithm of both the county-wide and nation-wide number of cases and deaths at the start of the 7-day period. As our explanatory analysis showed strong relations between a county’s socioeconomic characteristics and its ability to abide by regulations, interaction terms between these variables and policy are included as well."),
         p("Using a fixed effects model with the within estimator ",
           tags$a(href = 'https://faculty.washington.edu/ezivot/econ582/fixedEffects.pdf', target = '_blank','(Fixed Effects Estimation of Panel Data)'), 
-          "the socioeconomic factors--which are constant across time--are removed, but their interaction with policy--which change over time--must be included."),
-        p("While mobility has certainly decreased following stay-at-home-orders (on average, mobility was .41 standard deviations below the mean in the seven days prior to policy and .73 standard deviations below the mean in the days since), the policy did not appear to cause this change. Instead, the model attributed the reduction in mobility mostly to the nation-wide number of coronavirus cases; seemingly, a growing fear of the virus, rather than compliance with government policy, has been the force motivating people to stay home. The process was repeated using a state-of-emergency declaration as the policy variable, yielding similar results. ")
+          "within-county means are subtracted from each variable, resulting in the elimination of the socioeconomic variables but not their interaction with policy. "),
+        p("The model attributes the reduction in mobility mostly to the number of coronavirus cases; seemingly, a growing fear of the virus, has been the force motivating people to stay home."),
+        p("The impact of stay-at-home orders varies across different counties; for example, our model shows that counties with a larger proportion of its population outside of the labor force are able to comply with stay-at-home orders more easily."),
+        p("Overall, if all stay-at-home orders were to be retracted, our model predicts counties to increase their mobility by an average of 8.66 percentage points relative to the baseline, with 87% of counties increasing their mobility to some extent.")
       ),
         column(
-          6, tags$img(src = "https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/README-files/Regression%20table.jpg", height = 550)
+          6, tags$img(src = "https://raw.githubusercontent.com/connorrothschild/covid-mobility/master/README-files/regression_table.png", height = 500)
           )
     )
     ),
@@ -565,28 +568,31 @@ ui <- fluidPage(
     fluidRow(column(
       6,
       h2("Concluding thoughts"),
-      p("In approaching this project, we sought to explore broadly how COVID-19 has affected the extent to which communities are moving around the country. We did this by examining questions of how people have changed their movement, if at all; the efficacy of policies limiting travel in meaningfully reducing movement; and what predictors may determine a particular community’s likelihood to abide by mobility regulations. We found that over the course of the virus spreading, mobility has broadly declined across the United States. There is a clear inverse relationship between a community’s number of cases and their overall mobility: as cases increase, mobility generally decreases."),
-      p("In particular, we saw policies such as the enactment of “stay-at-home” orders correspond with a sharp decrease in mobility, but whether these orders are actually causing the decline in mobility is more difficult to answer. People’s perception of the threat of the virus (roughly estimated by the number of cases and deaths) is a clear confounding factor. We must also account for a county’s ability to reduce mobility. A lack of social distancing does not necessarily imply a reluctance to social distance; sometimes, it can imply an inability to social distance, caused by a variety of socioeconomic factors. In fact, preliminary models showed little causal relation between policy and change in mobility. However, these models are very basic and are not yet robust enough to draw significant conclusions from.")
+      # div(id = "concludingText",
+      p("In approaching this project, we sought to explore broadly how COVID-19 has affected the extent to which communities are moving around the country and what factors may cause inconsistencies with this change. We found that over the course of the virus spreading, mobility has broadly declined across the United States. There is a clear inverse relationship between a community’s number of cases and their overall mobility: as cases increase, mobility generally decreases."),
+      p("In particular, we saw policies such as the enactment of “stay-at-home” orders correspond with a sharp decrease in mobility, but whether these orders are actually causing the decline in mobility is more difficult to answer. Our model showed that the threat of the virus (roughly measured by the number of cases) is a significant contributor to the widespread decline in mobility. Furthermore, though the effectiveness of stay-at-home orders varies across counties, most counties stand to suffer from a retraction of these orders. Ideally, our work would be used by lawmakers to understand how regulations will affect how people behave, allowing them to make better decisions."),
+      # )
     ),
-    column(
-      6,
-      h2("Next steps"),
-      p("In particular, we saw policies such as the enactment of “stay-at-home” orders correspond with a sharp decrease in mobility, but whether these orders are actually causing the decline in mobility is more difficult to answer. People’s perception of the threat of the virus (roughly estimated by the number of cases and deaths) is a clear confounding factor. We must also account for a county’s ability to reduce mobility. A lack of social distancing does not necessarily imply a reluctance to social distance; sometimes, it can imply an inability to social distance, caused by a variety of socioeconomic factors. In fact, preliminary models showed little causal relation between policy and change in mobility. However, these models are very basic and are not yet robust enough to draw significant conclusions from. "),
-      p("However, we recognize that the research done for this competition is not complete. We suggest future research continue to explore the extent to which reduced mobility, which is purportedly evidence of “social distancing,” reliably reduces transmission rates. Future models should seek to establish this relationship to determine the exact effectiveness of these measures to reduce the disease transmission."),
-      p("For more information on our project, please visit our ",
-        tags$a(href = 'https://github.com/connorrothschild/covid-mobility', target = '_blank', 'GitHub repository.')),
-      "There, you can find our code, data, and visualizations. The README contains our week 1 update for the CHRP competition. Thank you!")
-    ), 
-    fluidRow(selectInput(
-      inputId = "state_selected_predicted",
-      label = "Select State",
-      choices = stringr::str_to_title(ALL_STATES),
-      selected = "Texas",
-      width = "220px"
-    ),withSpinner(
-      plotlyOutput(outputId = "predictions_mobility")
-    ))
+    # column(
+    #   6,
+    #   h2("Next steps"),
+    #   p("In particular, we saw policies such as the enactment of “stay-at-home” orders correspond with a sharp decrease in mobility, but whether these orders are actually causing the decline in mobility is more difficult to answer. People’s perception of the threat of the virus (roughly estimated by the number of cases and deaths) is a clear confounding factor. We must also account for a county’s ability to reduce mobility. A lack of social distancing does not necessarily imply a reluctance to social distance; sometimes, it can imply an inability to social distance, caused by a variety of socioeconomic factors. In fact, preliminary models showed little causal relation between policy and change in mobility. However, these models are very basic and are not yet robust enough to draw significant conclusions from. "),
+    #   p("However, we recognize that the research done for this competition is not complete. We suggest future research continue to explore the extent to which reduced mobility, which is purportedly evidence of “social distancing,” reliably reduces transmission rates. Future models should seek to establish this relationship to determine the exact effectiveness of these measures to reduce the disease transmission."),
+    #   p("For more information on our project, please visit our ",
+    #     tags$a(href = 'https://github.com/connorrothschild/covid-mobility', target = '_blank', 'GitHub repository.')),
+    #   "There, you can find our code, data, and visualizations. The README contains our week 1 update for the CHRP competition. Thank you!")
+    # ), 
+    # fluidRow(selectInput(
+    #   inputId = "state_selected_predicted",
+    #   label = "Select State",
+    #   choices = stringr::str_to_title(ALL_STATES),
+    #   selected = "Texas",
+    #   width = "220px"
+    # ),withSpinner(
+    #   plotlyOutput(outputId = "predictions_mobility")
+    # ))
     )
+  )
   )
 )
   

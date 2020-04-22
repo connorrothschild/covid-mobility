@@ -1,3 +1,7 @@
 iframe {
 	border: 0;
 }
+
+#concludingText {
+  font-size: 48px;
+}
