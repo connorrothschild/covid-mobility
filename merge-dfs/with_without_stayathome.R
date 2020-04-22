@@ -10,12 +10,14 @@ with_clean <- with_latest %>%
   select(admin1, admin2, fips, value)
 
 without_clean <- without_stay_at_home %>% 
-  select(-X1)
+  select(-X1) %>% 
+  mutate(with_without = "without")
 
 with_clean <- with_clean %>% 
   rename('State' = 'admin1',
          'county' = 'admin2',
-         'pred' = 'value')
+         'pred' = 'value') %>% 
+  mutate(with_without = "with")
 
 with_without_final <- full_join(with_clean, without_clean)
 
