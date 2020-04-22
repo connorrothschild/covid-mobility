@@ -222,3 +222,26 @@ preds <- cbind(fips=preds_df_tildes$fips,
                pred=predict(fit_weekly,
                             newdata = preds_df_tildes %>% select(-fips)))
 write.csv(preds,'predictions.csv',row.names = FALSE)
+
+# retroactive predictions
+preds_df_old <- merged_all_weekly
+# assuming no policy
+preds_df_old$policy_x <- 0
+ACS_cols <- colnames(ACS_means_weekly)[2:ncol(ACS_means_weekly)]
+preds_df_old[,sapply(ACS_cols,function(x){paste0(x,'_int')})] <- 0
+preds_df_old_tildes <- preds_df_old %>% 
+  select(policy_x,min_cases,min_deaths,min_cases_natl,min_deaths_natl,
+         all_of(sapply(ACS_cols,function(x){
+           paste0(x,'_int')
+         }))) -
+  preds_df_old %>% 
+  select(policy_x_mean,min_cases_mean,min_deaths_mean,min_cases_natl,
+         min_deaths_natl_mean,all_of(sapply(ACS_cols,function(x){
+           paste0(x,'_int_mean')
+         })))
+preds_old <- cbind(fips=preds_df_old$fips,
+                   week=preds_df_old$week,
+                   pred=predict(
+                     fit_weekly,newdata = preds_df_old_tildes))
+write.csv(data.frame(preds_old) %>% filter(week>=0),'predictions_retro.csv',
+          row.names = FALSE)
