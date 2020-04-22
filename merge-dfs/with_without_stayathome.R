@@ -4,7 +4,7 @@ with_stay_at_home <- readr::read_csv('../viz/data/mobility/county/county-data-lo
 without_stay_at_home <- readr::read_csv('../viz/data/mobility/county/predictions_w_fips.csv')
 
 with_latest <- with_stay_at_home %>% 
-  filter(date == "2020-03-29")
+  filter(date == "2020-04-12")
 
 with_clean <- with_latest %>% 
   select(admin1, admin2, fips, value)
