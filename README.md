@@ -2,9 +2,9 @@
 
 # Mobility and Predictors of Movement During COVID-19
 
-### Team Stay-at-Home: Connor Rothschild, Rebecca Francis, Mario Paciuc, and Kyran Adams
+## Team Stay-at-Home: Connor Rothschild, Rebecca Francis, Mario Paciuc, and Kyran Adams
 
-## [**NOTE: Find our finished product as a Shiny application, found here.**](https://kyranadams.shinyapps.io/covid-mobility/)
+### [**NOTE: Our finished product is a Shiny application, which can be found here.**](https://kyranadams.shinyapps.io/covid-mobility/)
 
 ## **Introduction**
 
