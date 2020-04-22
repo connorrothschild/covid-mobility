@@ -856,35 +856,36 @@ server <- function(input, output, session) {
     print(selected_pred)
     
     p <-
-      ggplot(data = state_mobility, aes(x = date, y = mobility)) +
-      geom_line(color = "gray",
-                alpha = 0.3,
-                group = state_mobility$STATE,
-                aes(text = paste0('<b>', stringr::str_to_title(STATE), "</b><br>", format(date, format = "%B %d"), ": ", round(mobility, 1), "%"))) +
+      ggplot(data = selected_state_mobility, aes(x = date, y = mobility)) +
       geom_line(data = selected_state_mobility,
                 color = "steelblue",
                 alpha = 1,
                 size = 1, 
                 group = selected_state_mobility$STATE,
-                aes(text = paste0('<b>', stringr::str_to_title(STATE), "</b><br>", format(date, format = "%B %d"), ": ", round(mobility, 1), "%"))) +
-      geom_point(data = selected_pred, aes(x = date, y = pred), color = "red") + 
-      geom_line()
-      p <-
-        p + geom_vline(
-          aes(
-            xintercept = as.numeric(selected_stay_at_home),
-            color = "Stay at Home"
-          ),
-          alpha = 0.5,
-          show.legend = T
-        )
+                aes(text = paste0('<b>', stringr::str_to_title(STATE), "</b><br>", format(date, format = "%B %d"), ": ", round(mobility, 1), "%")))
+      
+    if (nrow(selected_pred) > 1) {
+      p <- p + 
+        geom_point(data = selected_pred, aes(x = date, y = pred), color = "red1") + 
+        geom_line(data = selected_pred, aes(x=date, y=pred))
+    }
+    
+    p <-
+      p + geom_vline(
+        aes(
+          xintercept = as.numeric(selected_stay_at_home),
+          color = "Stay at Home"
+        ),
+        alpha = 0.75,
+        show.legend = T
+      )
     
     
     p <- p +
       scale_color_manual(
         name = "Policies",
         values = c(
-          "Stay at Home" = "red",
+          "Stay at Home" = "red4",
           "State of Emergency" = "green",
           "Closed Non-essential Businesses" = "cyan"
         )
