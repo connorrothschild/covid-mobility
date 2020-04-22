@@ -298,6 +298,31 @@ case_mobility <- case_mobility[order(case_mobility$STATE, case_mobility$date), ]
 state_cases$date <- as.Date(state_cases$date)
 state_mobility$date <- as.Date(state_mobility$date)
 
+###### MOBILITY PREDICTIONS
+mobil_pred <- read.csv("data/predictions/predictions_retro.csv")
+mobil_pred <- merge(mobil_pred, full_dat[c('County_FIPS', 'STATE', 'E_TOTPOP')], by.x = 'fips', by.y = 'County_FIPS')
+# Aggregate pred by weighted average, using E_TOTPOP as the weights
+state_pred <- data.table(mobil_pred, key = "STATE")
+state_pred <- state_pred %>%
+  group_by(STATE, week) %>% 
+  mutate(pred = weighted.mean(pred, E_TOTPOP))
+# Remove uninteresting columns
+state_pred <-
+  subset(state_pred,
+         select = -c(E_TOTPOP, fips))
+# Remove duplicate rows
+state_pred <- as.data.frame(state_pred) %>% distinct()
+map_start_date <- function(x, output) {
+  state <- x['STATE']
+  selected_state_policies <- state_policies[which(toupper(state_policies$STATE) == toupper(state)),]
+  selected_stay_at_home <-
+    selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
+  date <- as.Date(selected_stay_at_home) + 7 * as.numeric(x['week'])
+  return(as.Date(date))
+}
+
+state_pred$date <- apply(state_pred, 1, map_start_date)
+state_pred$date <- as.Date(state_pred$date, origin ="1970-01-01")
 
 ###### SHINY DASHBOARD UI
 ui <- fluidPage(
@@ -548,7 +573,16 @@ ui <- fluidPage(
       p("For more information on our project, please visit our ",
         tags$a(href = 'https://github.com/connorrothschild/covid-mobility', target = '_blank', 'GitHub repository.')),
       "There, you can find our code, data, and visualizations. The README contains our week 1 update for the CHRP competition. Thank you!")
-    )
+    ), 
+    fluidRow(selectInput(
+      inputId = "state_selected_predicted",
+      label = "Select State",
+      choices = stringr::str_to_title(ALL_STATES),
+      selected = "Texas",
+      width = "220px"
+    ),withSpinner(
+      plotlyOutput(outputId = "predictions_mobility")
+    ))
     )
   )
 )
@@ -802,6 +836,64 @@ server <- function(input, output, session) {
     
     ggplotly(p, tooltip = 'text') %>% 
       layout(legend = list(orientation = "h", x = -0.05, y = -0.2)) 
+  })
+  
+  output$predictions_mobility <- renderPlotly({
+    selected_state_mobility <-
+      state_mobility[which(toupper(state_mobility$STATE) == toupper(input$state_selected_predicted)),]
+    selected_state_policies <-
+      state_policies[which(toupper(state_policies$STATE) == toupper(input$state_selected_predicted)),]
+    
+    selected_state_of_emergency <-
+      selected_state_policies[1, "STATE.OF.EMERGENCY"]
+    selected_stay_at_home <-
+      selected_state_policies[1, "STAY.AT.HOME..SHELTER.IN.PLACE"]
+    selected_closed_business <-
+      selected_state_policies[1, "CLOSED.NON.ESSENTIAL.BUSINESSES"]
+    
+    
+    selected_pred <- state_pred[which(toupper(state_pred$STATE) == toupper(input$state_selected_predicted)), ]
+    print(selected_pred)
+    
+    p <-
+      ggplot(data = state_mobility, aes(x = date, y = mobility)) +
+      geom_line(color = "gray",
+                alpha = 0.3,
+                group = state_mobility$STATE,
+                aes(text = paste0('<b>', stringr::str_to_title(STATE), "</b><br>", format(date, format = "%B %d"), ": ", round(mobility, 1), "%"))) +
+      geom_line(data = selected_state_mobility,
+                color = "steelblue",
+                alpha = 1,
+                size = 1, 
+                group = selected_state_mobility$STATE,
+                aes(text = paste0('<b>', stringr::str_to_title(STATE), "</b><br>", format(date, format = "%B %d"), ": ", round(mobility, 1), "%"))) +
+      geom_point(data = selected_pred, aes(x = date, y = pred), color = "red") + 
+      geom_line()
+      p <-
+        p + geom_vline(
+          aes(
+            xintercept = as.numeric(selected_stay_at_home),
+            color = "Stay at Home"
+          ),
+          alpha = 0.5,
+          show.legend = T
+        )
+    
+    
+    p <- p +
+      scale_color_manual(
+        name = "Policies",
+        values = c(
+          "Stay at Home" = "red",
+          "State of Emergency" = "green",
+          "Closed Non-essential Businesses" = "cyan"
+        )
+      ) +
+      scale_x_date(date_breaks = "5 days" , date_labels = "%m/%d") +
+      labs(x = "Date", y = "% Mobility Above Baseline") +
+      theme(legend.position = "bottom")
+    
+    ggplotly(p, tooltip = "text")
   })
 }
 
