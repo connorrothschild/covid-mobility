@@ -376,7 +376,7 @@ ui <- fluidPage(
     ),
     
     tabPanel(
-      "Cases and Mobility",
+      "Cases",
       fluid = TRUE,
       icon = icon("shoe-prints"),
       h2("We know from our research that as the number of cases increases, community members begin to travel less."),
@@ -403,7 +403,7 @@ ui <- fluidPage(
     ),
     
     tabPanel(
-      "Demographics and Mobility",
+      "Demographics",
       fluid = TRUE,
       icon = icon("address-book"),
       h3("But regardless of increasing caseloads, are there certain factors which limit a population’s ability to ‘social distance’?"),
@@ -463,7 +463,7 @@ ui <- fluidPage(
       
     ),
     tabPanel(
-      "Policies and Mobility",
+      "Policy",
       fluid = TRUE,
       icon = icon("poll"),
       h2("Finally, do policies like stay-at-home orders succeed in reducing travel?"),
@@ -515,10 +515,24 @@ ui <- fluidPage(
           )
     )
     ),
+    
+    tabPanel(
+      "Without policies",
+      fluid = TRUE,
+      icon = icon("window-close"),
+      fluidRow(
+        tags$iframe(
+          seamless = NA,
+          src = "https://connorrothschild.github.io/covid-mobility/viz/predictions/",
+          height = 800,
+          width = 1400
+        )
+      )
+      ),
   tabPanel(
     "Conclusion",
     fluid = TRUE,
-    icon = icon("bar-chart"),
+    # icon = icon("bar-chart"),
     # titlePanel("Policies and Mobility"),
     fluidRow(column(
       6,
@@ -637,8 +651,16 @@ server <- function(input, output, session) {
     y <- get_mobility_column(full_dat, input$MobilitySelector)
     
     test <- cor.test(x, y)
+
+    test$p.value.pretty = case_when(test$p.value < .0001 ~ "< .0001",
+                                    test$p.value < .001 ~ "< .001",
+                                    test$p.value < .01 ~ "< .01",
+                                    test$p.value < .05 ~ "< .05",
+                                    test$p.value < .1 ~ "< .1",
+                                    TRUE ~ as.character(round(test$p.value, 4))
+                                    )
     
-    cor_tab <- cbind(c(test$estimate), c(test$p.value))
+    cor_tab <- cbind(c(round(test$estimate, 4)), c(test$p.value.pretty))
     rownames(cor_tab) <- c(input$DemographicsSelector)
     colnames(cor_tab) <- c("Pearson's r", "p-value")
     

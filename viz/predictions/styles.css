@@ -1,0 +1,135 @@
+@import url('https://rsms.me/inter/inter.css');
+html {
+	font-family: 'Inter', sans-serif;
+}
+@supports (font-variation-settings: normal) {
+	html {
+		font-family: 'Inter var', sans-serif;
+	}
+}
+
+/* @import url("https://use.typekit.net/ful5wqp.css");
+
+html {
+	font-family: adobe-caslon-pro, serif;
+} */
+
+.button1 {
+	display: inline-block;
+	padding: 0.35em 1.2em;
+	border: 0.1em solid #ffffff;
+	margin: 0 2px 2px 0;
+	border-radius: 0.12em;
+	box-sizing: border-box;
+	text-decoration: none;
+	font-family: 'Inter', sans-serif;
+	font-weight: 300;
+	color: #000000;
+	text-align: center;
+	transition: all .5s;
+}
+
+.button1:hover {
+	color: #ffffff;
+	background-color: rgb(189, 100, 100);
+}
+
+.inactive {
+	color: #000000;
+	background-color: #f0f0f0;
+}
+
+.active {
+	color: #ffffff;
+	background-color: darkred;
+}
+
+@media all and (max-width: 30em) {
+	 .button1 {
+		display: block;
+		margin: 0.4em auto;
+	}
+}
+
+#content {
+	max-width: 60rem;
+	margin: 0 auto;
+	padding: 1rem;
+	/* margin: 5px;
+	padding: 20px; */
+}
+
+#map {
+	margin: 10px 0px 0px 0px;
+	padding: 0px;
+	/* display: flex;
+	flex-wrap: wrap;
+	width: 960px; */
+}
+
+h1,
+h2,
+h3 {
+	line-height: 1em;
+	/* font-size: 1.75em; */
+	color: #000;
+	/* font-family: adobe-caslon-pro, serif; */
+	font-weight: 400;
+	font-style: normal;
+}
+
+.date {
+	font-weight: 300;
+	font-style: italic;
+}
+
+.county {
+	fill: #fff;
+}
+
+.states {
+	fill: none;
+	stroke: #fff;
+	stroke-linejoin: round;
+}
+
+input {
+	display: block;
+	width: 200px;
+	margin: 10px 0px 0px 0px;
+}
+
+#legend text {
+	font-size: 0.9em;
+	color: #333;
+	font-weight: 400;
+}
+
+.tooltip {
+	position: absolute;
+	padding: 7px;
+	font-size: 0.9em;
+	pointer-events: none;
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+
+	-moz-box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.25);
+	box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.25);
+}
+
+.tooltip p {
+	margin: 0;
+	padding: 0;
+}
+
+.tooltip table {
+	margin: 0;
+	padding: 0;
+	border-collapse: collapse;
+}
+
+.wide {
+	width: 140px;
+}
