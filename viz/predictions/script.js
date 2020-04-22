@@ -98,7 +98,7 @@ function renderRegular() {
 			.attr('class', 'county')
 			.attr('d', path)
 			.style('stroke', 'grey')
-			.style('stroke-width', 0.5)
+			.style('stroke-width', 0.7)
 			.style('fill', 'grey');
 
 		svg
@@ -109,7 +109,9 @@ function renderRegular() {
 				})
 			)
 			.attr('class', 'states')
-			.attr('d', path);
+			.attr('d', path)
+			.style('stroke', 'grey')
+			.style('stroke-width', 0.7);
 
 		var legend = svg.append('g').attr('id', 'legend');
 
@@ -317,7 +319,9 @@ function renderPrediction() {
 				})
 			)
 			.attr('class', 'states')
-			.attr('d', path);
+			.attr('d', path)
+			.style('stroke', 'grey')
+			.style('stroke-width', 0.7);
 
 		var legend = svg.append('g').attr('id', 'legend');
 

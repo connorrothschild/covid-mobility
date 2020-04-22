@@ -98,7 +98,9 @@ function ready(error, data, us) {
 			})
 		)
 		.attr('class', 'states')
-		.attr('d', path);
+		.attr('d', path)
+		.style('stroke', 'grey')
+		.style('stroke-width', 0.7);
 
 	var legend = svg.append('g').attr('id', 'legend');
 
