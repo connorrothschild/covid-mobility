@@ -1,21 +1,17 @@
 ## app.R ##
 library(shinydashboard)
-library(highcharter)
-library(flexdashboard)
-library(ggplot2)
-library(knitr)
-library(kableExtra)
-library(dplyr)
-library(tidyr)
-library(data.table)
 library(shiny)
+library(highcharter)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(data.table)
 library(DT)
+library(tidyr)
 library(ggrepel)
 library(shinycssloaders)
 library(shinythemes)
 library(SwimmeR)
-library(plotly)
-library(r2d3)
 
 
 thm <-
