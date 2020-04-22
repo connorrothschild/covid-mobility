@@ -300,12 +300,15 @@ state_mobility$date <- as.Date(state_mobility$date)
 
 ###### MOBILITY PREDICTIONS
 mobil_pred <- read.csv("data/predictions/predictions_retro.csv")
+mobil_pred_pol <- read.csv("data/predictions/predictions_retro_w_policy.csv")
+colnames(mobil_pred_pol)[3] = "pred_pol"
+mobil_pred <- merge(mobil_pred, mobil_pred_pol, by=c("fips", "week"))
 mobil_pred <- merge(mobil_pred, full_dat[c('County_FIPS', 'STATE', 'E_TOTPOP')], by.x = 'fips', by.y = 'County_FIPS')
 # Aggregate pred by weighted average, using E_TOTPOP as the weights
 state_pred <- data.table(mobil_pred, key = "STATE")
 state_pred <- state_pred %>%
   group_by(STATE, week) %>% 
-  mutate(pred = weighted.mean(pred, E_TOTPOP))
+  mutate(pred = weighted.mean(pred, E_TOTPOP), pred_pol = weighted.mean(pred_pol, E_TOTPOP))
 # Remove uninteresting columns
 state_pred <-
   subset(state_pred,
@@ -867,7 +870,9 @@ server <- function(input, output, session) {
     if (nrow(selected_pred) > 1) {
       p <- p + 
         geom_point(data = selected_pred, aes(x = date, y = pred), color = "red1") + 
-        geom_line(data = selected_pred, aes(x=date, y=pred))
+        geom_line(data = selected_pred, aes(x=date, y=pred)) + 
+        geom_point(data = selected_pred, aes(x = date, y = pred_pol), color = "blue") + 
+        geom_line(data = selected_pred, aes(x=date, y=pred_pol))
     }
     
     p <-
