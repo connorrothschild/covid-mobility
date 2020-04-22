@@ -60,9 +60,12 @@ run_weekly <- function(mobility_df,ACS_df,cases_df,policy_df,
     select(state,all_of(policy_var)) %>% 
     mutate(policy_date=as.Date(policy_df[,policy_var],
                                format='%m/%d/%Y'))
-  # looking only at states with policy in place
+  # filling in policy date as latest day of data for those with no policy
   policy_df_clean <- policy_df_clean %>% 
-    filter(!is.na(policy_date))
+    mutate(no_policy=case_when(!is.na(policy_date)~0,
+                               is.na(policy_date)~1))
+  policy_df_clean$policy_date[
+    is.na(policy_df_clean$policy_date)] <- as.Date('2020-04-21')
   
   # joining mobility and policy data
   mobility_policy_df <- merge(mobility_df,policy_df_clean,
@@ -73,7 +76,6 @@ run_weekly <- function(mobility_df,ACS_df,cases_df,policy_df,
   # adding week number
   mobility_policy_df <- mobility_policy_df %>% 
     mutate(week = floor((days_since-1)/7))
-  
   
   # adding case data
   mobility_policy_cases_df <- merge(mobility_policy_df,cases_df,
