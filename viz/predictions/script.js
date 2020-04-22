@@ -1,4 +1,6 @@
 function renderRegular() {
+	d3.select('#prediction').attr('class', 'button1 inactive');
+	d3.select('#regular').attr('class', 'button1 active');
 	d3.selectAll('svg').remove();
 	d3.select('.d3-tip').remove();
 	d3.select('.withWithout').text('with');
@@ -218,6 +220,8 @@ function renderPrediction() {
 	d3.selectAll('svg').remove();
 	d3.select('.d3-tip').remove();
 	d3.select('.withWithout').text('without');
+	d3.select('#regular').attr('class', 'button1 inactive');
+	d3.select('#prediction').attr('class', 'button1 active');
 
 	var second = 1;
 

@@ -31,6 +31,16 @@ html {
 
 .button1:hover {
 	color: #ffffff;
+	background-color: rgb(189, 100, 100);
+}
+
+.inactive {
+	color: #000000;
+	background-color: #f0f0f0;
+}
+
+.active {
+	color: #ffffff;
 	background-color: darkred;
 }
 
